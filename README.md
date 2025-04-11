@@ -1,9 +1,5 @@
 # 交易入门
 
-## 交易准则
-
-待补充...
-
 ## 一、K线
 
 ### 概念
@@ -40,7 +36,11 @@ K线的绘制方法是找到当日最高和最低价,垂直连成一条直线,�
 ![](./images/type1.png)
 
 - 上升趋势: 通过买家强劲的动能拉动,形成了新的顶顶高和底底高,新的高点突破代表上升趋势延续,股价继续走高和看涨,新的低点如果跌破的话,可能意味着趋势的反转
+
 - 下跌趋势: 透过卖家抛售的动能形成了新的顶顶低以及新的底底低,新的低点跌破代表下跌趋势延续,新的高点突破的话代表趋势的反转
+
+
+
 
 
 ## 二、成交量
@@ -379,6 +379,21 @@ K线从下轨穿出中轨就是第一个买点,假如趋势延续,每次K线从�
 4. 入场点买入现货
 5. 止盈卖出单(Sell Limit) -> 65,000
 6. 止损卖出单(Sell Stop) -> 58,000
+
+
+
+## 十一、重要的经济会议
+
+- FOMC METTINGS
+- NON-FARM PAYROLLS
+- CPI INFLATION
+- FED CHAIR SPEECHES
+- EUROPEAN GENTRAL BANK (ECB) METTINGS
+- PCE INFLATION
+- RETAIL SALES
+- GROSS DOMESTIC PRODUCT (GDP) GROWTH RATES
+- MANUFACTURING PURCHASING MANAGERS INDEX (PMI)
+- CHINESE DATA
 
 
 
