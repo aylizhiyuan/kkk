@@ -1,6 +1,6 @@
-# 交易入门
+# K线 & 技术指标
 
-## 一、K线
+## 一、K线基础
 
 ### 概念
 
@@ -12,28 +12,28 @@ K线图又称蜡烛图、阴阳线,据传K线为日本江户时代的白米商�
 
 K线因其绘制方法及逻辑有其独到之处,后人把它引入价格走势的分析中,经过了300多年的发展,已经是各种报价软件的主流线图,并广泛应用于期货、外汇、期权等证券市场
 
-![](./images/k.jpg)
+![](./images/k/k.jpg)
 
 ### K线如何绘制而成?
 
 K线的绘制方法是找到当日最高和最低价,垂直连成一条直线,然后再找到开盘价和收盘价,将此两个价位连成一条狭长的长方柱体
 
-![](./images/K线.jpg)
+![](./images/k/K线.jpg)
 
 若收盘价高于开盘价,也就是股价上涨的时候,以红色表示,称为`阳线`
 
-![](./images/redk.jpg)
+![](./images/k/redk.jpg)
 
 反之收盘价低于开盘价,股价下跌的时候,以绿色表示,称为`阴线`
 
-![](./images/greenk.jpg)
+![](./images/k/greenk.jpg)
 
 
 ### 常见的K线形态
 
-![](./images/type2.png)
+![](./images/k/type2.png)
 
-![](./images/type1.png)
+![](./images/k/type1.png)
 
 - `上升趋势`: 通过买家强劲的动能拉动,形成了新的顶顶高和底底高,新的高点突破代表上升趋势延续,股价继续走高和看涨,新的低点如果跌破的话,可能意味着趋势的反转
 
@@ -47,79 +47,79 @@ K线的绘制方法是找到当日最高和最低价,垂直连成一条直线,�
 
 ***1. 长影线蜡烛***
 
-![](./images/candle1.png)
+![](./images/k/candle1.png)
 
 > 烛身越短,蜡烛越好;烛芯越长,蜡烛越好
 
-![](./images/candle2.png)
+![](./images/k/candle2.png)
 
 > 上升趋势中,关键阻力位上出现长影线
 
-![](./images/candle3.png)
+![](./images/k/candle3.png)
 
 > 下降趋势中,关键支撑位上出现长影线
 
 
 ***2. 组合长影线蜡烛***
 
-![](./images/candle4.png)
+![](./images/k/candle4.png)
 
 
-![](./images/candle5.png)
+![](./images/k/candle5.png)
 
 > 上升趋势中出现的多个长影线
 
-![](./images/candle6.png)
+![](./images/k/candle6.png)
 
 > 下降趋势中出现的多个长影线
 
 ***3. 倒置长烛芯蜡烛***
 
-![](./images/candle7.png)
+![](./images/k/candle7.png)
 
-![](./images/candle8.png)
+![](./images/k/candle8.png)
 
 > 上升阶段出现倒置长烛芯蜡烛
 
-![](./images/candle9.png)
+![](./images/k/candle9.png)
 
 > 下降阶段出现倒置长烛芯蜡烛
 
 
 ***4. 内线蜡烛图***
 
-![](./images/candle10.png)
+![](./images/k/candle10.png)
 
-![](./images/candle11.png)
+![](./images/k/candle11.png)
 
 > 上升阶段的时候出现内线蜡烛
 
-![](./images/candle12.png)
+![](./images/k/candle12.png)
 
 > 下跌阶段的时候出现内线蜡烛
 
 ***5. 连续收缩蜡烛图***
 
-![](./images/candle13.png)
+![](./images/k/candle13.png)
 
-![](./images/candle14.png)
+![](./images/k/candle14.png)
 
 > 上升阶段的时候出现连续收缩蜡烛
 
-![](./images/candle15.png)
+![](./images/k/candle15.png)
 
 > 下降阶段的时候出现连续收缩蜡烛
 
 
 ***6. 连续增长蜡烛图***
 
-![](./images/candle16.png)
+![](./images/k/candle16.png)
 
-![](./images/candle17.png)
+![](./images/k/candle17.png)
 
 > 连续大阴线
 
-![](./images/candle18.png)
+![](./images/k/candle18.png)
 
 > 连续大阳线
 
@@ -127,24 +127,24 @@ K线的绘制方法是找到当日最高和最低价,垂直连成一条直线,�
 
 ***7. 蜡烛颜色变化***
 
-![](./images/candle19.png)
+![](./images/k/candle19.png)
 
-![](./images/candle20.png)
+![](./images/k/candle20.png)
 
 > 连续大阳线后的大阴线
 
-![](./images/candle21.png)
+![](./images/k/candle21.png)
 
 > 连续大阴线后的大阳线
 
 
 ***8. 动量蜡烛***
 
-![](./images/candle22.png)
+![](./images/k/candle22.png)
 
-![](./images/candle23.png)
+![](./images/k/candle23.png)
 
-![](./images/candle24.png)
+![](./images/k/candle24.png)
 
 
 ### 图表形态大总结
@@ -153,10 +153,10 @@ K线的绘制方法是找到当日最高和最低价,垂直连成一条直线,�
 
 双顶: 预示着未能创造更高的高点,而是创建了相同的高点,意味着买家动能减弱
 
-![](./images/doubletop.png)
+![](./images/k/doubletop.png)
 
 双底: 预示着价格未能创下更低的低点,而是创下了相同的地点,意味着卖家的动能减弱
-![](./images/doublebottom.png)
+![](./images/k/doublebottom.png)
 
 ***入场点选择:***
 
@@ -166,40 +166,40 @@ K线的绘制方法是找到当日最高和最低价,垂直连成一条直线,�
 
 ***2. 三顶 & 三底***
 
-![](./images/tripletop.png)
+![](./images/k/tripletop.png)
 
-![](./images/triplebottom.png)
+![](./images/k/triplebottom.png)
 
 
 ***3. 趋势延续形态***
 
-![](./images/bullish.png)
+![](./images/k/bullish.png)
 
 看涨形态
 
-![](./images/bearish.png)
+![](./images/k/bearish.png)
 
 看跌形态
 
 ***4. 趋势变化***
 
-![](./images/change1.png)
+![](./images/k/change1.png)
 
-![](./images/change2.png)
+![](./images/k/change2.png)
 
-![](./images/change3.png)
+![](./images/k/change3.png)
 
-![](./images/change4.png)
+![](./images/k/change4.png)
 
 ***5. 头肩顶 & 底***
 
-![](./images/head1.png)
+![](./images/k/head1.png)
 
-![](./images/head2.png)
+![](./images/k/head2.png)
 
-![](./images/head3.png)
+![](./images/k/head3.png)
 
-![](./images/head4.png)
+![](./images/k/head4.png)
 
 入场点:
 
@@ -212,31 +212,31 @@ K线的绘制方法是找到当日最高和最低价,垂直连成一条直线,�
 
 - 上升三角形
 
-![](./images/triangle.png)
+![](./images/k/triangle.png)
 
 - 下降三角形
 
-![](./images/triangle1.png)
+![](./images/k/triangle1.png)
 
 - 对称三角形
 
-![](./images/triangle2.png)
+![](./images/k/triangle2.png)
 
 
 ***7. 通道***
 
-![](./images/channel1.png)
+![](./images/k/channel1.png)
 
-![](./images/channel2.png)
+![](./images/k/channel2.png)
 
-![](./images/channel3.png)
+![](./images/k/channel3.png)
 
 
 ***8. 楔形***
 
-![](./images/wedge1.png)
+![](./images/k/wedge1.png)
 
-![](./images/wedge2.png)
+![](./images/k/wedge2.png)
 
 
 
@@ -247,45 +247,45 @@ K线的绘制方法是找到当日最高和最低价,垂直连成一条直线,�
 
 ***1. 上升趋势中的趋势交易***
 
-![](./images/trade1.png)
+![](./images/k/trade1.png)
 
-![](./images/trade2.png)
+![](./images/k/trade2.png)
 
 
 
 ***2. 下降趋势中的趋势交易***
 
-![](./images/trade3.png)
+![](./images/k/trade3.png)
 
-![](./images/trade4.png)
+![](./images/k/trade4.png)
 
 
 
 ***3. 上升趋势中的反转交易***
 
-![](./images/trade5.png)
+![](./images/k/trade5.png)
 
-![](./images/trade6.png)
+![](./images/k/trade6.png)
 
 
 ***4. 下降趋势中的反转交易***
 
-![](./images/trade7.png)
+![](./images/k/trade7.png)
 
-![](./images/trade8.png)
+![](./images/k/trade8.png)
 
 
 ***5. 在上升趋势中进行逆转延续交易***
 
-![](./images/trade9.png)
+![](./images/k/trade9.png)
 
-![](./images/trade10.png)
+![](./images/k/trade10.png)
 
 ***6. 在下降趋势中进行逆转延续交易***
 
-![](./images/trade11.png)
+![](./images/k/trade11.png)
 
-![](./images/trade12.png)
+![](./images/k/trade12.png)
 
 
 ## 二、成交量
