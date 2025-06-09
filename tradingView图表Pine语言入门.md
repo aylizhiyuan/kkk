@@ -173,15 +173,135 @@ plot(series = close, color = color.red)
 
 ## 5. 变量
 
-## 6. 数据系统
+```javascript
+var string name1 = '测试' // 可以省略声明/数据类型
+name2 = '测试' // 可以是文字
+name3 = name2 // 可以是变量
+age = 18 + 1 // 可以是表达式
+age = if 1 > 0 
+    18 // 可以是if/for/while/switch结构
+size = ta.rsi(close,7) // 可以是函数调用
+// 多个变量的赋值
+[d,f,g] = ta.bb(close,20,2)
+// var声明的变量是全局变量,变量仅初始化一次
+// 适用于长期存放累加的数据,并不需要实时的计算
+var data = 0
+data := data + 1 // 重新赋值的写法
+```
+
+
+## 6. 数据类型
+
+**[限定类型] - [变量类型]**
+
+**限定类型**
+
+- const: 适用于不随时间变化的常量值
+- input: 让用户通过设置面板自定义脚本参数
+- simple: 只会在脚本初始化阶段执行一次,不会随K线每一根更新而更新
+- series: 变量的值可以随着每一跟K线而更新,如果你不写修饰符,变量就是series
+
+> const < input < simple < series 
+
+```
+ma = ta.sma(close,14) // 默认就是series类型
+simple initClose = close // 加载图表的时候只记录那一时刻的收盘价,然后一直维持不变
+```
+
+**变量类型**
+
+- 基本类型: int float bool color string
+- 特殊类型: plot(绘图) hline(水平线) line(线) linefill(填充线) box(方框) polyline(折线) label(表格) table(图表) chart.point(点) array(数组) matrix(矩阵) map
+- 自定义类型: type 关键字允许建立使用者定义的类型
+- 4na(空白) void类型
+
+```javascript
+a = 10  // 默认类型判断是const int
+
+a = 1.5 // const float 
+
+a = "hello" // const string 
+
+a = close // 默认是series float类型,随着K线更新
+
+a = ta.sma(close,14) // series float
+
+c = input(b * 2, 'input:c') // input
+
+d = input.source(close,'标题') // series 
+
+```
 
 ## 7. 运算符
 
+- 算数运算符 + - * / %
+    - +可以用来字符串相连
+    - float 和int运算,结果为float
+    - 如果有一个值是na,结果也是na
+- 比较运算符
+    - <  小于
+    - <= 小于等于
+    - !=  
+    - == 
+    - `>` 
+    - `>=`    
+- 逻辑运算符
+    - not 
+    - and  
+    - or
+- 三元运算符
+- 历史引用运算符
+    - 可以使用[]历史引用运算符来引用时间序列的过去值        
+
 ## 8. if条件
+
+```javascript
+
+if a - 1
+    c:= color.red
+else if (b)
+    c:= color.green
+else if close < high
+    c:= color.rgb(6,221,249)
+else
+    c:= color.rgb(233,243,33)
+```
 
 ## 9. switch条件
 
-## 10. 实战
+```javascript
+
+float ma = switch maType
+    "EMA" => ta.ema(close,maLength)
+    "SMA" => ta.sma(close,maLength)
+    "RMA" => ta.rma(close,maLength)
+    "WMA" => ta.wma(close,maLength)
+
+switch
+    close > open => color_data = color.green
+    close < high => color_data = color.yellow
+```
+
+## 10. 自定义函数
+
+```javascript
+
+f1(x,y) => x + y // 单行函数
+
+a = f1(1,1)
+b = f1(close,open)
+c = f1(open,1)
+
+f2(m,n) =>
+    a = m + n 
+    b = a + 1
+    b // 返回值
+
+d = f2(a,2)
+
+```
+
+
 
 
 
