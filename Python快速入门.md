@@ -40,7 +40,236 @@ else:
 
 ## python数据类型
 
+python中的变量不需要声明,每个变量在使用前都必须赋值,赋值以后该变量才会被创建
+
+`=`用来给变量赋值
+
+左边是变量名,右边是存储在变量中的值
+
+```python
+counter = 100 # 整型变量
+miles = 1000.0 # 浮点型变量
+name = "test" # 字符串
+
+
+# 多个变量赋值
+a = b = c = 1
+
+a,b,c = 1,2,"test"
+
+print(type(a))
+print(type(b))
+```
+
+- **Number数字**
+- **String字符串**
+- **bool布尔类型**
+- **List列表**
+- **Tuple元组**
+- **Set集合**
+- **Dictionary字典**
+
+### Number数字
+
+`int`,`float`,`bool`,`complex`
+
+- int 整数,不限大小
+- float 浮点数,双精度
+- complex 复数
+- bool 布尔值(子类化自int)
+
+### String字符串
+
+
+使用单引号`'`或双引号`"`括起来,同时使用反斜杠`\`转义特殊字符
+
+> 变量[头下标:尾下标]
+
+索引值从0开始,-1是末尾的开始位置
+
+```python
+
+str = "Runoob" # 定义一个字符串变量
+print(str) # 打印整个字符串
+print(str[0:-1]) # 第一个到倒数第二个字符
+print(str[0]) # 打印字符串的第一个字符
+print(str[2:5]) # 打印字符串第三个到第五个字符
+print(str[2:]) # 打印从第三个字符开始到末尾
+print(str * 2) # 打印字符串两次
+print(str + "TEST") # 打印字符串和TEST拼接
+
+print('Ru\noob') # 回车
+```
+
+### Bool布尔类型
+
+布尔类型就是`True`或者`False`
+
+```python
+
+# 布尔类型的值和类型
+a = True
+b = False
+print(type(a)) # <class 'bool'>
+print(type(b)) # <class 'bool'>
+
+# 布尔类型的整数表现
+
+print(int(True)) # 1
+print(int(False)) # 0
+
+# 使用bool()函数进行转化
+print(bool(0)) # False
+print(bool(1)) # True
+print(bool('')) # False
+print(bool('Python')) # True
+print(bool([])) # False
+print(bool([1,2,3])) # True
+
+# 布尔逻辑运算
+
+print(True and False) # False
+print(True or False) # True
+print(not True) # False
+
+# 布尔比较运算
+print(5 > 3) # True
+print(2 == 2) # True
+print(7 < 4) # False
+
+```
+
+**0 、空字符串、空列表、空元组**都是False
+
+
+### List列表
+
+列表是写在方括号之间`[]`、用逗号分隔开的元素列表
+
+和字符串一样,列表同样可以被索引和截取,列表被截取后返回一个包含所需元素的新的列表
+
+```python
+list = ['abcd',786,2.23,'runoob',70.2] # 定义一个列表
+
+tinylist = [123,'runoob']
+
+print(list) # 打印整个列表
+print(list[0]) # 打印列表的第一个元素
+print(list[1:3]) # 打印列表第二 - 第四个元素
+print(list[2:]) # 打印列表从第三个元素开始到末尾
+print(tinylist * 2) # 打印tinylist列表两次
+print(list + tinylist) # 打印两个列表拼接在一起的结果
+
+# 列表中的元素是可以修改的
+a = [1,2,3,4,5,6]
+a[2:5] = [13,14,15]
+```
+
+
+
+### Tuple元组
+
+元组跟列表类似,不同之处在于元组的元素不能修改,元组写在`()`里,元素用逗号隔开,元素类型也可以不相同
+
+```python
+
+tuple = ('abcd',786,2.23,'runoob',70.2)
+tinytuple = (123,'runoob')
+
+print(tuple) # 输出完整的元组
+print(tuple[0]) # 输出元组的第一个元素
+print(tuple[1:3]) # 输出元组的第二个元素开始到第三个元素
+print(tuple[2:]) # 输出从第三个元素开始的所有元素
+print(tinytuple * 2) # 输出两次元组
+print(tuple + tinytuple) # 连接元组
+```
+
+
+### Set集合
+
+集合是一种无序、可变的数据类型,用于存储唯一的元素.集合中的元素不会重复,可以进行交集、并集、差集等常见的集合操作
+
+在python中,集合用大括号`{}`表示,元素之间用`,`分隔
+
+```python
+
+sites = {'Google','Taobao','Runoob','Facebook','Zhihu','Baidu'}
+
+print(sites) # 输出集合,重复的元素被自动去掉
+
+
+# set可以进行集合运算
+
+a = set('abracadabra')
+b = set('alacazam')
+
+print(a - b) # a和b的差集
+
+print(a | b) # a和b的并集
+
+print(a & b) # a和b的交集
+
+print(a ^ b) # a和b中不同时存在的元素
+```
+
+### Dictionary字典
+
+字典是一种映射类型,字典使用`{}`标识,它是一个无序的`键:值`集合
+
+```python
+dict = {}
+dict['one'] = "1 - 克制"
+dict[2] = "2 - 克制"
+tinydict = {'name':'runoob','code':1,'site':'runoob'}
+
+print(dict['one']) # 输出键为one的值
+print(dict[2]) # 输出键位2的值
+print(tinydict) # 输出完整的字典
+print(tinydict.keys()) # 输出所有键
+print(tinydict.values) # 输出所有值
+
+```
+
+
 ## python数据类型转化
+
+- 隐式转化 ,自动完成
+- 显式类型转化,需要使用类型函数来转换
+
+```python
+
+num_int = 123
+
+num_flo = 1.23
+
+num_new = num_int + num_flo
+
+print("num_new 值为:",num_new)
+print("num_new 数据类型为:",type(num_new)) # float,两种不同类型的数据进行运算,较低的就会转化为较高的数据类型以避免数据丢失
+
+num_int = 123
+num_str = '456'
+
+print(num_int + num_str) # 无法进行隐式转换,需要进行显式转换
+
+```
+
+```python
+
+x = int(1) # x的输出结果为1
+y = int(2.8) # y的输出结果为2
+z = int("3") # z的输出结果为3
+
+x = float(1)     # x 输出结果为 1.0
+y = float(2.8)   # y 输出结果为 2.8
+z = float("3")   # z 输出结果为 3.0
+w = float("4.2") # w 输出结果为 4.2
+
+x = str("s1") # x 输出结果为 's1'
+y = str(2)    # y 输出结果为 '2'
+z = str(3.0)  # z 输出结果为 '3.0'
+```
+
 
 ## python解释器
 
