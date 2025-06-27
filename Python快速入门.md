@@ -514,25 +514,97 @@ if ( a is not b ):
    print ("4 - a 和 b 没有相同的标识")
 else:
    print ("4 - a 和 b 有相同的标识")
-
 ```
-
-## python数字
-
-
-## python字符串
-
-## python列表
-
-## python元组
-
-## python字典
-
-## python集合
 
 ## python条件控制
 
+```python
+# if判断
+age = int(input("请输入你家狗狗的年龄: "))
+print("")
+if age <= 0:
+    print("你是在逗我吧!")
+elif age == 1:
+    print("相当于 14 岁的人。")
+elif age == 2:
+    print("相当于 22 岁的人。")
+elif age > 2:
+    human = 22 + (age -2)*5
+    print("对应人类年龄: ", human)
+
+```
+
 ## python循环语句
+
+```python
+n = 100
+sum = 0
+counter = 1
+while counter <= n:
+   sum = sum + counter
+   counter += 1
+print("1 到 %d 之和为: %d",(n,sum))
+
+# 列表循环
+sites = ["Baidu", "Google","Runoob","Taobao"]
+for site in sites:
+    print(site)
+# 字符串循环
+word = 'runoob'
+ for letter in word:
+    print(letter) 
+# 计数循环
+for number in range(1,6):
+   print(number)
+
+# for....else
+for x in range(6):
+  print(x)
+else:
+  print("Finally finished!")
+
+# for....break
+sites = ["Baidu", "Google","Runoob","Taobao"]
+for site in sites:
+    if site == "Runoob":
+        print("教程!")
+        break
+    print("循环数据 " + site)
+else:
+    print("没有循环数据!")
+print("完成循环!")  
+
+# while...break 跳出循环
+n = 5
+while n > 0:
+    n -= 1
+    if n == 2:
+        break
+    print(n)
+print('循环结束。')
+
+# while...continue
+n = 5
+while n > 0:
+    n -= 1
+    if n == 2:
+        continue
+    print(n)
+print('循环结束。')
+
+# for....break
+for letter in 'Runoob':
+   if letter == 'b':
+      break
+   print('当前字母为:',letter)   
+
+# for...continue
+for letter in 'Runoob':     # 第一个实例
+   if letter == 'o':        # 字母为 o 时跳过输出
+      continue
+   print ('当前字母 :', letter)
+
+```
 
 ## python迭代器
 
