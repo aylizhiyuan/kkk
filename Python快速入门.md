@@ -608,6 +608,18 @@ for letter in 'Runoob':     # 第一个实例
 
 ## python迭代器
 
+迭代器是一个可以记住遍历的位置的对象,迭代器对象从集合的第一个元素开始访问,直到所有的元素被访问完结束.迭代器只能往前不会后退
+
+```python
+list = [1,2,3,4]
+it = iter(list) # 创建迭代器对象
+print(next(it)) # 输出迭代器的下一个元素 1
+print(next(it)) # 下一个
+
+# 使用for循环进行遍历
+
+```
+
 ## python with
 
 ## python函数
