@@ -695,18 +695,3 @@ say_hello()
 
 # from modname import name1[, name2[, ... nameN]]
 ```
-
-
-## python输入和输出
-
-## python file
-
-## python OS
-
-## python错误和异常
-
-## python面对对象
-
-## python命名空间/作用域
-
-## python标准库概览
