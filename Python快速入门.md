@@ -617,20 +617,85 @@ print(next(it)) # 输出迭代器的下一个元素 1
 print(next(it)) # 下一个
 
 # 使用for循环进行遍历
-
+list = [1,2,3,4]
+it = iter(list) # 创建迭代器对象
+for x in it:
+   print(x,end=" ")
 ```
 
 ## python with
 
+```python
+
+with open('example.txt','r') as file:
+   content = file.read()
+   print(content)
+# 文件已经自动关闭
+```
+
 ## python函数
+
+```
+def 函数名(参数列表):
+   函数体
+```
+
+```python
+def hello() :
+   print("hello world")
+
+hello()
+```
 
 ## python装饰器
 
-## python数据结构
+装饰器是一种函数,它接受一个函数作为参数,并返回一个新的函数或修改原来的函数
+
+- 日志记录: 装饰器可以用于记录函数的调用信息、参数和返回值
+- 性能分析: 可以使用装饰器来测量函数的执行时间
+- 权限控制: 装饰器可用于限制对某些函数的访问权限
+- 缓存: 装饰器可用于实现函数结果的缓存,以提高性能
+
+```python
+
+# 简单的实例
+def my_decorator(func):
+   def wrapper():
+      print("在原函数之前执行")
+      func()
+      print("在原函数之后执行")
+   return wrapper
+
+@my_decorator
+def say_hello():
+   print("Hello!")
+say_hello()
+
+
+# 接受参数的实例
+def repeat(num_times):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            for _ in range(num_times):
+                func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+@repeat(3)
+def say_hello():
+    print("Hello!")
+say_hello()
+
+```
 
 ## python模块
 
-## python name
+```python
+# import module1[, module2[,... moduleN]
+
+# from modname import name1[, name2[, ... nameN]]
+```
+
 
 ## python输入和输出
 

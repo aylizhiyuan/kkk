@@ -98,7 +98,6 @@ RSI = 100 - (100 / 1 + RS)
 
 
 
-
 ### 三、价格波动范围
 
 **BOLLING**
@@ -127,8 +126,25 @@ a1 + a2 + a3 ... / n → 平均这些偏离的平方值
 ATR = 价格波动的强度 = 数字表示 = 某一天大了说明波动大了
 
 
+- 首先计算TR, TR 是衡量每天实际波动的范围，考虑跳空等情况，取三者中的最大值
+\[
+\text{TR} = \max \left( 
+\begin{array}{l}
+\text{High}_t - \text{Low}_t \\
+|\text{High}_t - \text{Close}_{t-1}| \\
+|\text{Low}_t - \text{Close}_{t-1}|
+\end{array}
+\right)
+\]
 
+- 再计算ATR,ATR 是过去 N 天波动的平均值，使用指数加权，更重视近期的波动
 
+\[
+\text{ATR}_t = \alpha \cdot \text{TR}_t + (1 - \alpha) \cdot \text{ATR}_{t-1}
+\]
+\[
+\alpha = \frac{2}{N + 1}
+\]
 
 **range 识别震荡区**
 
