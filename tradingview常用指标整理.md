@@ -1,7 +1,7 @@
 ## tradingview常用指标整理
 
 - 散户视角
-    - 趋势类 EMA/SMA/WMA 判断价格趋势方向
+    - 趋势类 EMA/SMA/WMA/ADX 判断价格趋势方向/强弱
     - 动能类 MACD/RSI/Stochastic 判断价格涨跌强弱、拐点
     - 波动类 ATR/Bollinger Bands 看价格波动范围
     - 成交量类 OBV/Volume MA 看资金进出强弱
@@ -14,6 +14,50 @@
     - FVG 价格不平衡区域,易回补
 
 ### 一. 移动平均线 MA/EMA/SMA
+
+**ADX**
+
+`ADX`使用每根K线的最高价和最低价来计算波动幅度，`RSI`使用的是价格的收盘价的涨幅和跌幅来看近期上涨和下跌的速度或者动量
+
+```javascript
+//@version=5
+indicator("手动实现 ADX", overlay=false)
+
+// === 参数 ===
+length = input.int(14, "ADX周期")
+
+// === 第一步：计算 TR, +DM, -DM ===
+up   = ta.change(high)
+down = -ta.change(low)
+// 向上变动
+plusDM  = (up > down and up > 0)   ? up   : 0
+// 向下变动
+minusDM = (down > up and down > 0) ? down : 0
+// 价格波动范围,true range
+tr = ta.tr
+
+// === 第二步：对 TR, +DM, -DM 进行 Wilder 平滑 ===
+smoothedTR     = ta.rma(tr, length)
+smoothedPlusDM = ta.rma(plusDM, length)
+smoothedMinusDM = ta.rma(minusDM, length)
+
+// === 第三步：计算 +DI, -DI ===
+plusDI  = 100 * smoothedPlusDM / smoothedTR
+minusDI = 100 * smoothedMinusDM / smoothedTR
+
+// === 第四步：计算 DX ===
+dx = 100 * math.abs(plusDI - minusDI) / (plusDI + minusDI)
+
+// === 第五步：计算 ADX（对 DX 再做一次平滑）===
+adx = ta.rma(dx, length)
+
+// === 画出 ADX 线和 +DI, -DI ===
+plot(adx,      title="ADX",      color=color.orange, linewidth=2)
+plot(plusDI,   title="+DI",      color=color.green)
+plot(minusDI,  title="-DI",      color=color.red)
+hline(25,      "趋势强度分界线", color=color.gray, linestyle=hline.style_dotted)
+
+```
 
 
 **SMA**
@@ -63,7 +107,7 @@ plot(show_ema55d and not is_5min ? ema55_day : na, title="日线 EMA55", color=c
 ```
 
 
-### 二、价格涨跌强度
+### 二、价格涨跌速度
 
 **MACD**
 
@@ -78,6 +122,8 @@ DEA线 = DIF的9日EMA(平滑后的偏离趋势) = 均值,偏离的平均水平
 
 MACD柱状图 = DIF - DEA(动能增减的体现) = 反应这个开口相对于平均趋势是在扩大还是缩小 = 当前开口情况
 
+背离情况: 价格在上涨，但上涨的速度越来越慢，MACD柱状图逐渐缩短（正值变小），动能减弱，形成MACD顶背离;价格在下跌，但下跌的速度越来越慢，MACD柱状图逐渐缩短（负值变小），动能衰竭，形成MACD底背离。
+
 **RSI**
 
 RSI = 价格上涨下跌力度的强弱 = 通过计算一定周期内上涨和下跌的平均幅度，得出一个 0 到 100 之间的数值
@@ -90,13 +136,15 @@ RSI = 价格上涨下跌力度的强弱 = 通过计算一定周期内上涨和�
 
 RS = 平均上涨幅度  / 平均下跌幅度
 
-RS大的话,说明上涨 > 下跌; RS很小的话,下跌 < 上涨
+RS大的话,说明上涨 > 下跌; RS很小的话,下跌 > 上涨
 
 RS本质上是一个0到正无穷的数值,RSI把RS映射到0-100之间,形成一个标准化的指标
 
 RSI = 100 - (100 / 1 + RS)
 
+顶背离情况: 价格创新高，而RSI未创新高，预示上涨动力减弱，可能出现下跌
 
+底背离情况: 价格创新低，而RSI未创新低，表明下跌动能减弱，可能反转上涨
 
 ### 三、价格波动范围
 
@@ -120,13 +168,17 @@ a1 + a2 + a3 ... / n → 平均这些偏离的平方值
 
 最后开根号 → 得出标准差（衡量波动有多大）
 
+常用设置:
+
+- 短期交易 Length: 10,标准差的乘积: 1.5
+- 长期交易 Length: 50,标准差的乘积: 2.5
+
 
 **ATR**
 
 ATR = 价格波动的强度 = 数字表示 = 某一天大了说明波动大了
 
-
-- 首先计算TR, TR 是衡量每天实际波动的范围，考虑跳空等情况，取三者中的最大值
+-  假设周期是N(包括当前K线在内的N根K线),首先计算TR,TR 是衡量每天实际波动的范围，考虑跳空等情况，取三者中的最大值,最终算出N根K线的TR的值
 \[
 \text{TR} = \max \left( 
 \begin{array}{l}
@@ -137,127 +189,38 @@ ATR = 价格波动的强度 = 数字表示 = 某一天大了说明波动大了
 \right)
 \]
 
-- 再计算ATR,ATR 是过去 N 天波动的平均值，使用指数加权，更重视近期的波动
+- 假设你已经计算出每根K线的 TR 值：
+    - TR1：当前K线的真实波幅
+
+    - TR2：上一根K线的真实波幅
+    - TR3：上上一根K线的真实波幅
+    - 以此类推...
+
+- 计算第一个 ATR（第10根K线）
 
 \[
-\text{ATR}_t = \alpha \cdot \text{TR}_t + (1 - \alpha) \cdot \text{ATR}_{t-1}
+ATR_{10} = \frac{TR_1 + TR_2 + \cdots + TR_{10}}{10}
 \]
+
+> 用前10根K线的TR值简单平均，得到第一个ATR值。
+
+-  递推计算后续ATR（第11根及以后）对于 \( t > 10 \):
+
 \[
-\alpha = \frac{2}{N + 1}
+ATR_t = \frac{(ATR_{t-1} \times 9) + TR_t}{10}
 \]
 
-**range 识别震荡区**
+| K线序号 \(t\) | TR 值       | ATR 计算公式                         |
+|---------------|-------------|-------------------------------------|
+| 1 ~ 9         | 已计算的TR值 | 无ATR，等待凑满10根数据             |
+| 10            | TR_10       | \(ATR_{10} = \frac{\sum_{i=1}^{10} TR_i}{10}\) |
+| 11            | TR_11       | \(ATR_{11} = \frac{9 \times ATR_{10} + TR_{11}}{10}\) |
+| 12            | TR_12       | \(ATR_{12} = \frac{9 \times ATR_{11} + TR_{12}}{10}\) |
+| ...           | ...         | 持续递推计算                         |
 
-```javascript
-// This work is licensed under a Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) https://creativecommons.org/licenses/by-nc-sa/4.0/
-// © LuxAlgo
+这样，你可以从第10根K线开始，拿到第一个ATR值，然后用递推公式计算之后所有ATR
 
-//@version=5
-// max_boxes_count 最多绘制500个box
-// max_lines_count 最多绘制500个line
-indicator("Range Detector [LuxAlgo]", "LuxAlgo - Range Detector", overlay = true, max_boxes_count = 500, max_lines_count = 500)
-//------------------------------------------------------------------------------
-//Settings
-// length 检测一个震荡区间最少包含多少根K线
-length = input.int(20, 'Minimum Range Length', minval = 2)
-// 范围宽度乘数(用于放大ATR)
-mult   = input.float(1., 'Range Width', minval = 0, step = 0.1)
-// ATR的计算周期
-atrLen = input.int(500, 'ATR Length', minval = 1)
-
-//Style
-upCss = input(#089981, 'Broken Upward', group = 'Style')
-dnCss = input(#f23645, 'Broken Downward', group = 'Style')
-unbrokenCss = input(#2157f3, 'Unbroken', group = 'Style')
-
-//-----------------------------------------------------------------------------}
-//Detect and highlight ranges
-//-----------------------------------------------------------------------------{
-// bx 和lvl用于保存当前绘制的box和line对象
-var box bx = na
-var line lvl = na
-
-// 定义当前box的上下边界
-var float max = na
-var float min = na
-
-// os用于记录突破方向(0代表未突破,1向上,-1向下)
-var os = 0
-// 背景色,在识别范围期间用灰色显示
-color detect_css = na
-// 当前bar的索引
-n = bar_index
-// 使用art * mult 得到区上下边界范围
-atr = ta.atr(atrLen) * mult
-// 使用SMA对收盘价做平滑处理,作为区间中心
-ma = ta.sma(close, length)
-
-count = 0
-// 前25跟K线拿出来跟均值ma比较
-for i = 0 to length-1
-    count += math.abs(close[i] - ma) > atr ? 1 : 0
-// 刚进入震荡区间
-if count == 0 and count[1] != count
-    // 合并两个震荡区
-    if n[length] <= bx.get_right()
-        max := math.max(ma + atr, bx.get_top())
-        min := math.min(ma - atr, bx.get_bottom())
-        
-        //Box new coordinates
-        bx.set_top(max)
-        bx.set_rightbottom(n, min)
-        bx.set_bgcolor(color.new(unbrokenCss, 80))
-
-        //Line new coordinates
-        avg = math.avg(max, min)
-        lvl.set_y1(avg)
-        lvl.set_xy2(n, avg)
-        lvl.set_color(unbrokenCss)
-    else
-        // 新画一个震荡区
-        max := ma + atr
-        min := ma - atr
-
-        //Set new box and level
-        bx := box.new(n[length], ma + atr, n, ma - atr, na
-          , bgcolor = color.new(unbrokenCss, 80))
-        
-        lvl := line.new(n[length], ma, n, ma
-          , color = unbrokenCss
-          , style = line.style_dotted)
-
-        detect_css := color.new(color.gray, 80)
-        os := 0
-// 已经在震荡区间了,覆盖更多的K线
-else if count == 0
-    // 把之前画的震荡区右边界,往当前这根K线的位置延伸,让框变宽
-    bx.set_right(n)
-    // 把中线的终点也延伸到当前K线的位置
-    lvl.set_x2(n)
-
-// 当前收盘价是否高于震荡区上边界
-if close > bx.get_top()
-    // 定义为向上突破
-    bx.set_bgcolor(color.new(upCss, 80))
-    lvl.set_color(upCss)
-    os := 1
-else if close < bx.get_bottom()
-    // 定义为向下突破
-    bx.set_bgcolor(color.new(dnCss, 80))
-    lvl.set_color(dnCss)
-    os := -1
-
-//-----------------------------------------------------------------------------}
-//Plots
-//-----------------------------------------------------------------------------{
-bgcolor(detect_css)
-// 画出上下边界的线,以均线为中心,加上或者减去一定倍数的ATR,算出来 
-plot(max, 'Range Top'
-  , max != max[1] ? na : os == 0 ? unbrokenCss : os == 1 ? upCss : dnCss)
-
-plot(min, 'Range Bottom'
-  , min != min[1] ? na : os == 0 ? unbrokenCss : os == 1 ? upCss : dnCss)
-```
+这也意味着我如果想知道当前K线的波动,那么必须等待10根K线后才可以
 
 ### 四、成交量
 
