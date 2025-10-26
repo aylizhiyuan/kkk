@@ -6,7 +6,6 @@
     - 波动类 ATR/Bollinger Bands/Super Trend 看价格波动范围
     - 成交量类 OBV/Volume MA 看资金进出强弱
     - 形态类 ZigZag 识别图表形态
-
 - 机构视角
     - BOS/Choch 趋势反转确认
     - OB 主力建仓区域
@@ -16,6 +15,11 @@
 ### 一. 移动平均线 MA/EMA/SMA
 
 **ADX**
+
+主要用于判断单边行情的趋势强弱以及震荡
+
+- 顺势策略：ADX 高 → 趋势强 → 可以跟随方向操作，ADX减弱 、方向变化时候出场
+- 震荡策略：ADX 低 → 趋势弱 → 可以考虑区间操作或等待趋势启动
 
 ```javascript
 //@version=5
