@@ -228,13 +228,41 @@ ATR是TR的平均,表示近期价格的平均波动幅度
 
 ### 四、成交量
 
-**VWAP**
-
+在Tradingview中原生数据只有`volume`,所有的量能指标都是基于`volume`计算的
 
 
 
 
 ### 五、形态
+
+**zigzag**
+
+```javascript
+zz(length) => 
+    [dir,p_h,p_l] = pivot(length)
+    // 检测当前K线的方向是否跟上一根方向不同
+    // 不同方向上的差值 +1 向上 -1 向下
+    dirchanged = ta.change(dir)
+    if p_h or p_l
+        add_to_zz(dir,dirchanged,p_h,p_l,bar_index)
+zz(period)        
+```
+
+- 每根bar调用pivot(period),判断当前是否为pivot(高/低)
+
+- dirchange使用`ta.change(dir)`只反应当前K线与前一根K线的变化幅度
+
+- 如果检测到p_h或p_l(存在更高的高点，低点)就调用add_to_zz把点加入到zz数组结构中
+
+
+```js
+pivot(period) =>
+    // 在多跟K线中，它是否是最高价格的那根 
+    float p_h = ta.highestbars(high,period) == 0 ? high : na
+    float p_l = ta.lowestbars(low,period) == 0 ? low : na
+    
+
+```
 
 
 
