@@ -16,7 +16,7 @@
 
 **ADX**
 
-主要用于判断单边行情的趋势强弱以及震荡
+主要用于判断单边行情的趋势强弱以及震荡 -- 本质就是趋势持续的时间,长期上涨的话,趋势就变强
 
 - 顺势策略：ADX 高 → 趋势强 → 可以跟随方向操作，ADX减弱 、方向变化时候出场
 - 震荡策略：ADX 低 → 趋势弱 → 可以考虑区间操作或等待趋势启动
@@ -219,7 +219,7 @@ ATR是TR的平均,表示近期价格的平均波动幅度
 
 主要作用：判断当前市场是多头趋势还是空头趋势
 
-- 计算ATR：ATR越大，市场的波动越大；ATR越小，市场月平稳
+- 计算ATR：ATR越大，市场的波动越大；ATR越小，市场越平稳
 
 - 计算上下轨：上轨 = 中心价格 + ATR x 系数；下轨 = 中心价格 + ATR x 系数
 
@@ -229,6 +229,65 @@ ATR是TR的平均,表示近期价格的平均波动幅度
 ### 四、成交量
 
 在Tradingview中原生数据只有`volume`,所有的量能指标都是基于`volume`计算的
+
+
+**成交量爆量**
+
+
+```js
+// === 成交量多级放量 ===
+vol_ma = ta.sma(volume, 20)
+vol_mild    = volume > vol_ma * 1.2 and volume <= vol_ma * 1.5
+vol_strong  = volume > vol_ma * 1.5 and volume <= vol_ma * 2.0
+vol_extreme = volume > vol_ma * 2.0
+
+// === 参数 ===
+bars_lookahead = 5          // 跟踪未来5根
+follow_vol_mult = 1.0       // 跟随K线的放量标准（>均量即可）
+follow_vol_required = 2     // 至少2根跟随放量
+
+// === 状态变量 ===
+var bool track_follow = false        // 是否正在跟踪中
+var int bars_since_break = 0         // 已经过去的K线数
+var int follow_vol_count = 0         // 跟随放量的数量
+var bool has_following_vol = false   // 是否确认出现跟随放量
+
+// === 主放量触发 ===
+is_main_break = volume > vol_ma * 1.2
+
+// === 核心逻辑：else if 避免主放量K线被统计 ===
+if is_main_break
+    // 只启动跟踪，不立即统计
+    track_follow := true
+    bars_since_break := 0
+    follow_vol_count := 0
+    has_following_vol := false
+
+else if track_follow
+    // 进入跟踪逻辑
+    bars_since_break += 1
+
+    // 检查当前K线是否放量
+    if volume > vol_ma * follow_vol_mult
+        follow_vol_count += 1
+
+    // 若5根内出现至少2根放量，则确认成功
+    if follow_vol_count >= follow_vol_required
+        has_following_vol := true // 展示连续放量标签
+    // 超过5根取消监控并去除标签
+    if bars_since_break > bars_lookahead
+        track_follow := false // 放弃统计并重新进行爆量K的统计
+        has_following_vol := false  // 去除标签的展示
+
+// === 可视化标识 ===
+vol_symbol =
+     vol_extreme       ? "🚀" :
+     vol_strong        ? "💥" :
+     vol_mild          ? "🟢" :
+                         "⚪️"
+```
+
+
 
 
 
@@ -241,7 +300,7 @@ ATR是TR的平均,表示近期价格的平均波动幅度
 zz(length) => 
     [dir,p_h,p_l] = pivot(length)
     // 检测当前K线的方向是否跟上一根方向不同
-    // 不同方向上的差值 +1 向上 -1 向下
+    // 0 表示不变,2方向反转向上，-2 方向反转向下
     dirchanged = ta.change(dir)
     if p_h or p_l
         add_to_zz(dir,dirchanged,p_h,p_l,bar_index)
@@ -257,16 +316,96 @@ zz(period)
 
 ```js
 pivot(period) =>
-    // 在多跟K线中，它是否是最高价格的那根 
+    // 在多跟K线中，它是否是最高价格的那根,如果是保存，否则为na
     float p_h = ta.highestbars(high,period) == 0 ? high : na
     float p_l = ta.lowestbars(low,period) == 0 ? low : na
-    
-
+    dir = 0
+    // 如果当前是低点的话,得到-1,否则继承上一跟dir[1]
+    iff_1 = p_l and na(p_h) ? -1 : dir[1]
+    // 如果当前是高点,dir = 1
+    dir := p_h and na(p_l) ? 1 : iff_1
+    [dir,p_h,p_l]
 ```
 
 
+```js
+// 价格，索引，方向
+add_to_array(value,index,dir) =>
+    // 检查当前高点是否比上一个高点更高，低点是否比上一个低点低
+    // 用 mult 标记当前点是“新高/新低”（权重 2），还是普通 pivot（权重 1）,就是转折点
+    mult = array.size(ZZvalues) < 2 ? 1 : dir * value > dir * array.get(ZZvalues, 1) ? 2 : 1
+    array.unshift(ZZindexes, index) // 插头K线索引
+    array.unshift(ZZvalues, value) // 插头K线价格
+    array.unshift(ZZdir, dir * mult) // 插头K线的方向（-1/+1）* 权重(2/1)
+    // 超过最大数组长度 → 删除最旧的点
+    if array.size(ZZindexes) > max_array_size
+        array.pop(ZZindexes)
+        array.pop(ZZvalues)
+        array.pop(ZZdir)
+```
 
 
+```js
+// 当前K线的方向、是否反转、高点、低点、K线索引
+add_to_zz(dir, dirchanged, p_h, p_l, index) =>
+    // 找到有效的高点或者低点
+    value = dir == 1 ? p_h : p_l
+    // 假设新增的高点低点方向发生了反转
+    if array.size(ZZvalues) == 0 or dirchanged
+        add_to_array(value, index, dir)
+    // 同一个方向，但是出现了新高或者新低 
+    // 删除数组头部元素（最最近的 pivot 点）
+    // 替换原来的 pivot 点   
+    else if dir == 1 and value > array.get(ZZvalues, 0) or dir == -1 and value < array.get(ZZvalues, 0)
+        array.shift(ZZvalues)
+        array.shift(ZZindexes)
+        array.shift(ZZdir)
+        add_to_array(value, index, dir)
+```
+
+```js
+
+if barstate.isconfirmed and array.size(ZZindexes) > 1
+    lastHigh = 0.0
+    lastLow = 0.0
+    // 遍历数组，从0开始，步长是1，数组的长度 - 1就是遍历的终点
+    for x = 0 to array.size(ZZindexes) - 1 by 1
+        // i是从后往前，所以，i一般是最末尾的点
+        i = array.size(ZZindexes) - 1 - x
+        index = array.get(ZZindexes, i)
+        value = array.get(ZZvalues, i)
+        highLow = array.get(ZZdir, i)
+        index_offset = bar_index - index
+        // 注释文字
+        labelText = highLow == 2 ? 'HH' : highLow == 1 ? 'LH' : highLow == -1 ? 'HL' : 'LL'
+        // 注释颜色
+        labelColor = highLow == 2 ? HHColor : highLow == 1 ? LHColor : highLow == -1 ? HLColor : LLColor
+        // 线的颜色
+        lineColor = highLow == 2 ? HHColor : highLow == 1 ? LHColor : highLow == -1 ? HLColor : LLColor
+        // 上升还是下降 
+        labelStyle = highLow > 0 ? label.style_label_down : label.style_label_up
+        // label的坐标
+        labelLocation = yloc.price
+        
+        // 画label
+        if showLabels
+
+            l = label.new(x=index, y=value, xloc=xloc.bar_index, yloc=labelLocation, style=labelStyle, size=size.tiny, color=labelColor,text=labelText)
+            array.unshift(labelArray, l)
+            if array.size(labelArray) > max_array_size
+                label.delete(array.pop(labelArray))
+        // 线
+        // 遍历的时候从末尾最后一个点开始遍历
+        if i < array.size(ZZindexes) - 1 and showZZ
+            // 从后往前画，旧的先画，新的最后画
+            indexLast = array.get(ZZindexes, i + 1)
+            valueLast = array.get(ZZvalues, i + 1)
+
+            l = line.new(x1=index, y1=value, x2=indexLast, y2=valueLast, color=labelColor, width=2, style=line.style_solid)
+            array.unshift(lineArray, l)
+            if array.size(lineArray) > max_array_size
+                line.delete(array.pop(lineArray))
+```
 
 ### 六. 聪明钱SMC
 
