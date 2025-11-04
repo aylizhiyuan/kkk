@@ -230,11 +230,10 @@ ATR是TR的平均,表示近期价格的平均波动幅度
 
 在Tradingview中原生数据只有`volume`,所有的量能指标都是基于`volume`计算的
 
-
-**成交量爆量**
-
+***成交量反转指标**
 
 ```js
+
 // === 成交量多级放量 ===
 vol_ma = ta.sma(volume, 20)
 vol_mild    = volume > vol_ma * 1.2 and volume <= vol_ma * 1.5
@@ -245,37 +244,53 @@ vol_extreme = volume > vol_ma * 2.0
 bars_lookahead = 5          // 跟踪未来5根
 follow_vol_mult = 1.0       // 跟随K线的放量标准（>均量即可）
 follow_vol_required = 2     // 至少2根跟随放量
+look_back = 20              // 突破的观察周期
 
 // === 状态变量 ===
 var bool track_follow = false        // 是否正在跟踪中
 var int bars_since_break = 0         // 已经过去的K线数
 var int follow_vol_count = 0         // 跟随放量的数量
 var bool has_following_vol = false   // 是否确认出现跟随放量
+var label buy_label = na  // 保存标签，防止重复画
 
 // === 主放量触发 ===
-is_main_break = volume > vol_ma * 1.2
+atr30 = ta.atr(30)          // 每根K线只计算一次
+y1 = low - (atr30 * 2.0)
 
-// === 核心逻辑：else if 避免主放量K线被统计 ===
-if is_main_break
+// === 低位突破逻辑 ===
+bull_anchor_low = ta.lowest(low, look_back)
+is_bull_anchor_break = low <= bull_anchor_low // 当前K线的最低点是20根K线中的最低点
+// 爆量K的条件: 成交量1.2, 创造了最低点,阳K
+is_main_break = volume > vol_ma * 1.2 and is_bull_anchor_break and close > open
+
+// 假如已经出现了爆量K，并且未启动监控，则启动监控，并恢复初始计时
+if is_main_break and not track_follow
     // 只启动跟踪，不立即统计
     track_follow := true
     bars_since_break := 0
     follow_vol_count := 0
     has_following_vol := false
 
+// 爆量已经出现并且启动了监控了
 else if track_follow
     // 进入跟踪逻辑
     bars_since_break += 1
 
-    // 检查当前K线是否放量
-    if volume > vol_ma * follow_vol_mult
+    // 检查当前K线是否放量且上涨,放量后进行累加
+    if volume > vol_ma * follow_vol_mult and close > open // 必须保证是阳线跟随
         follow_vol_count += 1
 
     // 若5根内出现至少2根放量，则确认成功
-    if follow_vol_count >= follow_vol_required
+    if follow_vol_count >= follow_vol_required and not has_following_vol
         has_following_vol := true // 展示连续放量标签
+        buy_label := label.new(bar_index, low - atr30*2, "BUY\n★", 
+                               style=label.style_label_up,
+                               color=color.new(color.green,0),
+                               textcolor=color.white,
+                               size=size.small)
+
     // 超过5根取消监控并去除标签
-    if bars_since_break > bars_lookahead
+    if bars_since_break >= bars_lookahead
         track_follow := false // 放弃统计并重新进行爆量K的统计
         has_following_vol := false  // 去除标签的展示
 
@@ -285,6 +300,7 @@ vol_symbol =
      vol_strong        ? "💥" :
      vol_mild          ? "🟢" :
                          "⚪️"
+
 ```
 
 
