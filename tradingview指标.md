@@ -461,10 +461,21 @@ if barstate.isconfirmed and array.size(ZZindexes) > 1
 新 K 线到来 → 窗口滑动 → 再用当前 5 根重算 → 持续寻找新的 pivot
 
 ```
-[ 1 2 3 4 5 ] → 反转？ → 是 → pivotLow / pivotHigh
-[ 2 3 4 5 6 ] → 反转？ → 否 → 忽略
-[ 3 4 5 6 7 ] → 反转？ → 是 → pivot 记录
-[ 4 5 6 7 8 ] → ...
+时间 → 
+ bar1      bar2     bar3      bar4      bar5       bar6(current)
+high[5]   high[4]  hgih[3]   hight[2]  high[1]    high[0]
+
+检查bar1
+
+bar1 vs [bar2,bar3,bar4,bar5,current[bar6]]
+
+检查bar2
+
+bar2 vs [bar3,bar4,bar5,bar6,current(bar7)]
+
+检查bar3
+
+bar3 vs [bar4,bar5,bar6,bar7,current(bar8)]
 
 ```
 
@@ -475,10 +486,10 @@ if barstate.isconfirmed and array.size(ZZindexes) > 1
 leg(int size) =>
     var leg     = 0
     // 看跌leg
-    // 5 根以前的那根 K，是否是过去 5 根（滚动窗口）中的最高点
+    // 过往第6根高点 > 之前5根的最高点,所以他是一组结构中(5根为一组)的最高点
     newLegHigh  = high[size] > ta.highest( size)
     // 看涨leg
-    // 5 根以前的那根 K，是否是过去 5 根（滚动窗口）中的最底点
+    // 过往第6根的低点 < 之前5根的最低点,所以它是一组结构中的最低点
     newLegLow   = low[size]  < ta.lowest( size)
     
     if newLegHigh
@@ -511,7 +522,7 @@ getCurrentStructure(int size,bool equalHighLow = false, bool internal = false) =
     pivotLow                = startOfBullishLeg(currentLeg)
     // 看涨反转
     pivotHigh               = startOfBearishLeg(currentLeg)
-    // 如果继续跌或者继续涨应该不会处理的，反转后记录反转点
+    // 结构块反转后记录反转的价格
     if newPivot
         // 下跌 --> 上涨，记录上涨起涨点
         if pivotLow
@@ -562,10 +573,10 @@ getCurrentStructure(int size,bool equalHighLow = false, bool internal = false) =
                 drawLabel(time[size], p_ivot.currentLevel, p_ivot.currentLevel > p_ivot.lastLevel ? 'HH' : 'LH', swingBearishColor, label.style_label_down)
 ```
 
-**3. 展示结构块**
+**3. 结构突破CHOCH + BOS**
 
 ```js
-// 这里应该是展示订单块的逻辑了
+// true 内部结构画线 false 波段画线
 displayStructure(bool internal = false) =>
     var bullishBar = true
     var bearishBar = true
@@ -573,7 +584,7 @@ displayStructure(bool internal = false) =>
     if internalFilterConfluenceInput
         bullishBar := high - math.max(close, open) > math.min(close, open - low)
         bearishBar := high - math.max(close, open) < math.min(close, open - low)
-    
+    // 当前的高点 pivot
     pivot p_ivot    = internal ? internalHigh : swingHigh
     trend t_rend    = internal ? internalTrend : swingTrend
 
@@ -582,13 +593,14 @@ displayStructure(bool internal = false) =>
 
     extraCondition  = internal ? internalHigh.currentLevel != swingHigh.currentLevel and bullishBar : true
     bullishColor    = styleInput == MONOCHROME ? MONO_BULLISH : internal ? internalBullColorInput : swingBullColorInput
-
+    // 高点突破 结构
     if ta.crossover(close,p_ivot.currentLevel) and not p_ivot.crossed and extraCondition
+        // 第一次多头突破用CHOCH,随后就用BOS 表示延续
         string tag = t_rend.bias == BEARISH ? CHOCH : BOS
 
 
-        p_ivot.crossed  := true
-        t_rend.bias     := BULLISH
+        p_ivot.crossed  := true // 已经被标记了
+        t_rend.bias     := BULLISH // 多头标记
 
         displayCondition = internal ? showInternalsInput and (showInternalBullInput == ALL or (showInternalBullInput == BOS and tag != CHOCH) or (showInternalBullInput == CHOCH and tag == CHOCH)) : showStructureInput and (showSwingBullInput == ALL or (showSwingBullInput == BOS and tag != CHOCH) or (showSwingBullInput == CHOCH and tag == CHOCH))
 
@@ -597,15 +609,14 @@ displayStructure(bool internal = false) =>
 
         if (internal and showInternalOrderBlocksInput) or (not internal and showSwingOrderBlocksInput)
             storeOrdeBlock(p_ivot,internal,BULLISH)
-
+    // 低点突破
     p_ivot          := internal ? internalLow : swingLow    
     extraCondition  := internal ? internalLow.currentLevel != swingLow.currentLevel and bearishBar : true
     bearishColor    = styleInput == MONOCHROME ? MONO_BEARISH : internal ? internalBearColorInput : swingBearColorInput
-
+    // 低点下破结构
     if ta.crossunder(close,p_ivot.currentLevel) and not p_ivot.crossed and extraCondition
+    // 第一次空头突破用CHOCH,随后用BOS
         string tag = t_rend.bias == BULLISH ? CHOCH : BOS
-
-
         p_ivot.crossed := true
         t_rend.bias := BEARISH
 
@@ -619,7 +630,7 @@ displayStructure(bool internal = false) =>
 
 ```
 
-**4. 删除结构块**
+**4. orderBlock的删除逻辑**
 
 ```js
 // 删除订单块的逻辑 , true 内部 false 波段
@@ -639,10 +650,9 @@ deleteOrderBlocks(bool internal = false) =>
 
 ```
 
-**5. 结构块**
+**5. order Block的绘制**
 
 ```js
-// 这个应该是重绘？
 drawOrderBlocks(bool internal = false) =>        
     array<orderBlock> orderBlocks = internal ? internalOrderBlocks : swingOrderBlocks
     orderBlocksSize = orderBlocks.size()
@@ -660,8 +670,9 @@ drawOrderBlocks(bool internal = false) =>
             b_ox.set_bottom_right_point(chart.point.new(last_bar_time,na,eachOrderBlock.barLow))        
             b_ox.set_border_color(      internal ? na : orderBlockColor)
             b_ox.set_bgcolor(           orderBlockColor)
-
 ```
+
+
 
 
 
