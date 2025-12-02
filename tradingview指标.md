@@ -512,6 +512,8 @@ startOfBullishLeg(int leg)  => ta.change(leg) == +1
 
 **2. 获取结构块**
 
+有了结构块以后,我们就可以画出HH HL LL LH这种反转点了, 高点(HH or HL)/低点(LH LL)分别标注
+
 ```js
 getCurrentStructure(int size,bool equalHighLow = false, bool internal = false) => 
     // 看涨还是看跌       
@@ -573,47 +575,53 @@ getCurrentStructure(int size,bool equalHighLow = false, bool internal = false) =
                 drawLabel(time[size], p_ivot.currentLevel, p_ivot.currentLevel > p_ivot.lastLevel ? 'HH' : 'LH', swingBearishColor, label.style_label_down)
 ```
 
+
+
 **3. 结构突破CHOCH + BOS**
+
+**当价格有效突破反转结构块的高点的时候,意味着价格从下跌转为了上涨**
+**当价格有效跌破反转结构块的低点的时候,意味着价格从上涨转为了下跌**
+
 
 ```js
 // true 内部结构画线 false 波段画线
 displayStructure(bool internal = false) =>
     var bullishBar = true
-    var bearishBar = true
+    var bearishBar = true 
 
     if internalFilterConfluenceInput
         bullishBar := high - math.max(close, open) > math.min(close, open - low)
         bearishBar := high - math.max(close, open) < math.min(close, open - low)
-    // 当前的高点 pivot
+    // 当前的高点 pivot 内部 or 波段
     pivot p_ivot    = internal ? internalHigh : swingHigh
     trend t_rend    = internal ? internalTrend : swingTrend
-
+    // 内部画虚线，波段画实线
     lineStyle       = internal ? line.style_dashed : line.style_solid
     labelSize       = internal ? internalStructureSize : swingStructureSize
 
     extraCondition  = internal ? internalHigh.currentLevel != swingHigh.currentLevel and bullishBar : true
     bullishColor    = styleInput == MONOCHROME ? MONO_BULLISH : internal ? internalBullColorInput : swingBullColorInput
-    // 高点突破 结构
+    // 价格突破了当前下跌前的高点 → 只有有效突破了下跌趋势的高点(5K),我们认定是看涨突破
     if ta.crossover(close,p_ivot.currentLevel) and not p_ivot.crossed and extraCondition
         // 第一次多头突破用CHOCH,随后就用BOS 表示延续
         string tag = t_rend.bias == BEARISH ? CHOCH : BOS
 
 
-        p_ivot.crossed  := true // 已经被标记了
+        p_ivot.crossed  := true // 被标记
         t_rend.bias     := BULLISH // 多头标记
 
         displayCondition = internal ? showInternalsInput and (showInternalBullInput == ALL or (showInternalBullInput == BOS and tag != CHOCH) or (showInternalBullInput == CHOCH and tag == CHOCH)) : showStructureInput and (showSwingBullInput == ALL or (showSwingBullInput == BOS and tag != CHOCH) or (showSwingBullInput == CHOCH and tag == CHOCH))
-
+        // 画出突破横线
         if displayCondition                        
             drawStructure(p_ivot,tag,bullishColor,lineStyle,label.style_label_down,labelSize)
-
+        // 存储看涨的订单块
         if (internal and showInternalOrderBlocksInput) or (not internal and showSwingOrderBlocksInput)
             storeOrdeBlock(p_ivot,internal,BULLISH)
     // 低点突破
     p_ivot          := internal ? internalLow : swingLow    
     extraCondition  := internal ? internalLow.currentLevel != swingLow.currentLevel and bearishBar : true
     bearishColor    = styleInput == MONOCHROME ? MONO_BEARISH : internal ? internalBearColorInput : swingBearColorInput
-    // 低点下破结构
+    // 价格下破了当前上涨前的低点” → 当前结构向空头突破 → 空头订单块
     if ta.crossunder(close,p_ivot.currentLevel) and not p_ivot.crossed and extraCondition
     // 第一次空头突破用CHOCH,随后用BOS
         string tag = t_rend.bias == BULLISH ? CHOCH : BOS
@@ -624,7 +632,7 @@ displayStructure(bool internal = false) =>
         
         if displayCondition                        
             drawStructure(p_ivot,tag,bearishColor,lineStyle,label.style_label_up,labelSize)
-
+        // 存储看跌的订单块
         if (internal and showInternalOrderBlocksInput) or (not internal and showSwingOrderBlocksInput)
             storeOrdeBlock(p_ivot,internal,BEARISH)
 
