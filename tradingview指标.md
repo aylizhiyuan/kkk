@@ -579,8 +579,10 @@ getCurrentStructure(int size,bool equalHighLow = false, bool internal = false) =
 
 **3. 结构突破CHOCH + BOS**
 
-**当价格有效突破反转结构块的高点的时候,意味着价格从下跌转为了上涨**
-**当价格有效跌破反转结构块的低点的时候,意味着价格从上涨转为了下跌**
+我们已经以5根为一组记录了一下上涨和下跌反转的关键位置了,接下来就是等待价格超过这些关键位置的时候标注
+
+**当当前的价格有效突破反转结构块的高点的时候,意味着价格从下跌转为了上涨**
+**当当前的价格有效跌破反转结构块的低点的时候,意味着价格从上涨转为了下跌**
 
 
 ```js
@@ -607,7 +609,7 @@ displayStructure(bool internal = false) =>
         string tag = t_rend.bias == BEARISH ? CHOCH : BOS
 
 
-        p_ivot.crossed  := true // 被标记
+        p_ivot.crossed  := true // 被标记，保证不会跟历史的结构点进行比较，只关注当前最新的反转点
         t_rend.bias     := BULLISH // 多头标记
 
         displayCondition = internal ? showInternalsInput and (showInternalBullInput == ALL or (showInternalBullInput == BOS and tag != CHOCH) or (showInternalBullInput == CHOCH and tag == CHOCH)) : showStructureInput and (showSwingBullInput == ALL or (showSwingBullInput == BOS and tag != CHOCH) or (showSwingBullInput == CHOCH and tag == CHOCH))
