@@ -2,121 +2,363 @@
 
 ## 1. 脚本的基本结构
 ---
-**指标:** 必须包含至少一个在图表上生成输出的函数调用,例如`plot()`,`plotshape()`,`barcolor()`,`line.new()`
 
-**策略:** 必须包含至少一个strategy.*()调用,例如`stragey.entry()`
+Pine Script 脚本主要分为两种类型：**指标（Indicator）** 和 **策略（Strategy）**
 
-简单总结:
+#### 指标（Indicator）
 
-- `指标`一定要在图表上画画,但是不能买入卖出
+**要求：**  
+必须包含至少一个在图表上生成可视化输出的函数调用，例如：
 
-- `策略`一定要有买入或者卖出,但是也可以画画
+- `plot()`
+- `plotshape()`
+- `barcolor()`
+- `line.new()`
 
-> 看情况选择指标或者策略,不需要买卖数据的情况下选择指标
+**特点：**
+
+- 只能用于分析和展示数据
+- 不能进行买入或卖出操作
 
 
-```
-// 脚本 - 指标
-// This Pine Script® code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+
+#### 策略（Strategy）
+
+**要求：**  
+必须包含至少一个 `strategy.*()` 调用，例如：
+
+- `strategy.entry()`
+- `strategy.exit()`
+
+**特点：**
+
+- 必须包含买入或卖出逻辑
+- 同时也可以在图表上绘制指标或辅助图形
+
+
+
+#### 简单总结
+
+- **指标**：一定要在图表上“画画”，但**不能买入卖出**
+- **策略**：一定要有**买入或卖出**，但也**可以画画**
+
+> 如果不涉及交易执行，仅用于分析行情，建议选择 **指标（Indicator）**
+
+---
+
+#### 示例：指标脚本
+
+```pinescript
+// This Pine Script® code is subject to the terms of the Mozilla Public License 2.0
+// https://mozilla.org/MPL/2.0/
 // © lizhiyuan2023
 
 //@version=6
 indicator("我的脚本")
-plot(close)
+plot(close, title="收盘价")
 ```
 
-```
-// 脚本 - 策略
-// This Pine Script® code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+
+#### 示例：策略脚本
+
+```pinescript
+// This Pine Script® code is subject to the terms of the Mozilla Public License 2.0
+// https://mozilla.org/MPL/2.0/
 // © lizhiyuan2023
 
 //@version=6
-strategy("我的策略", overlay=true, fill_orders_on_standard_ohlc = true)
+strategy(
+    "我的策略",
+    overlay = true,
+    fill_orders_on_standard_ohlc = true
+)
 
-longCondition = ta.crossover(ta.sma(close, 14), ta.sma(close, 28))
-if (longCondition)
-    strategy.entry("My Long Entry Id", strategy.long)
+// 均线金叉做多
+longCondition = ta.crossover(
+    ta.sma(close, 14),
+    ta.sma(close, 28)
+)
+if longCondition
+    strategy.entry("Long", strategy.long)
 
-shortCondition = ta.crossunder(ta.sma(close, 14), ta.sma(close, 28))
-if (shortCondition)
-    strategy.entry("My Short Entry Id", strategy.short)
+// 均线死叉做空
+shortCondition = ta.crossunder(
+    ta.sma(close, 14),
+    ta.sma(close, 28)
+)
+if shortCondition
+    strategy.entry("Short", strategy.short)
 ```
-
-在`打开脚本`地方查看自己的指标和策略,制作完成后发布即可
 
 
 ## 2. 函数
 ---
-- 内置函数: Pine编辑器自带的可调用函数
 
-- 自定义函数
+在 Pine Script 中，函数主要分为两类：
 
+- **内置函数**：Pine 编辑器自带、可以直接调用的函数  
+- **自定义函数**：由用户自行定义、用于封装重复逻辑的函数  
 
-```
+**内置函数示例（MACD）**
 
-// 内置函数示例
-indicator("MACD2.0指标")
-// 第一步计算出收盘价的ema12
-ema12 = ta.ema(close,12)
-// 第二步计算出收盘价的ema26
-ema26 = ta.ema(close,26)
-// 第三步计算出macd的值(ema12 - ema16)
+下面以 MACD 为例，演示内置函数的基本使用流程：
+
+```pinescript
+
+//@version=6
+indicator("MACD 2.0 指标")
+
+// 第一步：计算收盘价的 EMA12
+ema12 = ta.ema(close, 12)
+
+// 第二步：计算收盘价的 EMA26
+ema26 = ta.ema(close, 26)
+
+// 第三步：计算 MACD 快线（EMA12 - EMA26）
 fast = ema12 - ema26
-// 第四步计算出macd的指数平均值
-slow = ta.ema(fast,9)
-// 第五步画出来
-plot(fast) // 画出快线
-plot(slow,color=color.green) // 画出慢线
+
+// 第四步：计算 MACD 慢线（快线的 EMA9）
+slow = ta.ema(fast, 9)
+
+// 第五步：绘制到图表
+plot(fast, title = "MACD 快线")
+plot(slow, title = "MACD 慢线", color = color.green)
+```
+
+**内置函数的常用写法**
+
+```
+// 带参数名的标准写法（推荐，易读）
+plot(series = close, title = "收盘价", color = color.green)
+
+// 不按参数顺序的命名参数写法
+plot(title = "收盘价", series = close, color = color.green)
+
+// 省略可选参数
+plot(series = close, color = color.green)
+
+// 混合写法（常见，简洁）
+plot(close, "收盘价", color = color.green)
 
 ```
 
+**命名空间（Namespace）**
+
+Pine Script 使用**命名空间**对函数进行分类，不同领域的函数位于不同的命名空间中，调用形式一般为：
+
+
+#### 数学相关函数（`math`）
+
+- `math.abs()`：计算绝对值  
+- `math.max()`：返回最大值  
+- `math.random()`：生成随机数  
+- `math.round_to_mintick()`：按最小变动单位取整  
+
+
+
+#### 技术指标相关函数（`ta`）
+
+- `ta.sma()`：简单移动平均  
+- `ta.macd()`：MACD  
+- `ta.rsi()`：RSI  
+- `ta.supertrend()`：SuperTrend  
+- `ta.ema()`：指数移动平均  
+
+
+
+#### 数据请求相关函数（`request`）
+
+- `request.security()`：请求其他周期或其他交易品种的数据  
+- `request.dividends()`：分红数据  
+- `request.earnings()`：财报数据  
+- `request.financial()`：财务数据  
+- `request.quandl()`：Quandl 数据  
+- `request.splits()`：拆股数据  
+
+
+**自定义函数示例**
+
+```javascript
+
+f1(x,y) => x + y // 单行函数
+
+a = f1(1,1)
+b = f1(close,open)
+c = f1(open,1)
+
+f2(m,n) =>
+    a = m + n 
+    b = a + 1
+    b // 返回值
+
+d = f2(a,2)
+
 ```
-// 内置函数的写法举例
-// 带参数的标准写法
-plot(series=close,title='收盘价',color=color.green)
-// 不按顺序的标准写法
-plot(title='收盘价',series=close,color=color.green)
-// 可以省略可选参数
-plot(series=close,color=color.green)
-// 混合写法
-plot(close,'收盘价',color=color.green)
-```
-
-**命名空间**
-
-- 数学相关的函数math: `math.abs()`,`math.max()`,`math.random()`,`math.round_to_mintick()`
-
-- 技术指标ta: `ta.sma()`,`ta.macd()`,`ta.rsi()`,`ta.supertrend()`等
-
-- 其他交易品种或时间范围请求数据的函数: `request.dividends()`,`request.earnings()`,`request.financial()`,`request.quandl()`,`request.security()`,`request.splits()`
 
 
 ## 3. 脚本的运行逻辑
----
-**执行模型:** 脚本如何在图表上执行的
+--- 
 
-**历史柱:** 高/开/低/收/成交量已经确定了,并且不会再产生变化的K柱
+### 什么是执行模型？
 
-**实时柱:** 目前正在变化的K线柱(最右的一根K柱)
+**执行模型**指的是：  
+Pine Script 脚本是**如何在图表上被反复执行的**
 
-**指标在历史柱的执行模型:** 每根历史柱上运行一次脚本
+你可以先记住一句最重要的话：
 
-**指标在实时柱上的执行模型:** 脚本在实时柱开盘的时候执行,然后每次更新(即价格或成交量变化)时执行一次,在每次实时更新之前回滚变量,变量在结束栏更新时提交一次(收盘的时候回滚并执行)
-
-你可以理解为`close`就是当前价格,而不是收盘价,因此价格现在在不断变化中....它还没有收盘
+> Pine Script 不是一直运行的程序，而是**每一根 K 线都会从第一行重新执行整个脚本**。
 
 
-**策略在历史柱中的执行模型:** 跟指标的执行模型是一样的,策略的`买入`和`卖出`都是在满足条件后的下一个K线的开盘价位置执行,可以选择`在k线关闭时`则可以直接在当前K线中执行;
+### 历史柱（History Bar）
 
-**策略在实时柱上的执行模型:** 策略默认是实时柱关闭的时候运行一次;`每笔数据上`会变跟指标一样
+**历史柱**就是已经走完的 K 线
 
-> 默认的策略执行模型: 实时柱关闭后运行一次脚本,在满足条件后的下一个K线的开盘价位置执行买入卖出
+它的特点是：
 
-**系列值:** 值随着K线变化的变量,例如close,open
+- 开盘价、最高价、最低价、收盘价、成交量都已经确定  
+- 数据不会再发生变化  
+- 图表中**除最右边那一根以外的所有 K 线**，都是历史柱  
 
-**时间序列:** 变量随着时间变化而变化的基本结构
+对于历史柱来说，脚本只会在加载图表时执行一次，结果是稳定的
 
-- 引用历史值可以使用`[]`符号
+
+### 实时柱（Realtime Bar）
+
+**实时柱**是图表最右边那一根，正在形成中的 K 线
+
+它的特点是：
+
+- 价格和成交量会不断变化  
+- 还没有真正“收盘”  
+- 每次价格变化，脚本都会重新执行  
+
+因此在实时柱中：
+
+- close 表示的是**当前最新价格**
+- 而不是最终的收盘价  
+
+这也是为什么指标在最后一根 K 线上会不停跳动
+
+
+### 指标（Indicator）的执行方式
+
+#### 1. 指标在历史柱上的执行
+
+- 每一根历史 K 线，脚本都会执行一次  
+- 执行结果会被保存  
+- 不会回头修改  
+
+所以历史部分的指标是稳定不变的
+
+
+#### 2. 指标在实时柱上的执行（重点）
+
+实时柱中执行逻辑比较特殊：
+
+- K 线刚开始时，执行一次脚本  
+- 价格变化一次，就重新执行一次脚本  
+- 每次执行前，变量都会被“回滚”  
+- 只有在 K 线真正收盘时，结果才会被最终确认  
+
+你看到的现象就是：
+
+- 实时柱的指标一直在变  
+- 一旦收盘，就立刻固定下来  
+
+
+### 五、策略（Strategy）的执行方式
+
+#### 1. 策略在历史柱上的执行
+
+策略在历史柱中的执行方式和指标是一样的：
+
+- 每根历史 K 线执行一次脚本  
+
+不同点在于：  
+策略会产生**买入和卖出记录**，用于回测
+
+
+#### 2. 策略的默认下单逻辑（非常重要）
+
+默认情况下，策略的行为是：
+
+- 当前 K 线满足条件  
+- **下一根 K 线的开盘价才真正成交**
+
+也就是说：
+
+- 这一根 K 线负责“判断信号”  
+- 下一根 K 线负责“执行买卖”  
+
+这可以避免未来函数问题
+
+
+#### 3. 策略在实时柱上的执行
+
+默认设置下：
+
+- 实时柱只在**收盘时**执行一次脚本  
+- 不会随着价格每一次变动就反复下单  
+
+如果开启“每笔数据上运行”：
+
+- 执行方式会更像指标  
+- 行为会更复杂  
+- 初学者一般不建议使用  
+
+
+### 什么是系列值（Series）
+
+**系列值**指的是：  
+会随着 K 线一根一根变化的变量。
+
+常见的系列值包括：
+
+- open  
+- high  
+- low  
+- close  
+- volume  
+
+这些值：
+
+- 每一根 K 线都有一个  
+- 可以通过历史索引访问过去的数据  
+
+
+### 什么是时间序列（最核心概念）
+
+**时间序列**可以理解为：
+
+> 一串按照时间顺序排列的数据
+
+例如收盘价：
+
+- 当前 K 线一个值  
+- 上一根 K 线一个值  
+- 再上一根 K 线一个值  
+
+Pine Script 本质上就是在操作这些**随时间变化的数据序列**。
+
+
+### 小白版重点总结
+
+只记住下面几条就够了:
+
+- Pine Script 是由 K 线驱动执行的  
+- 每一根 K 线，脚本都会从头跑一遍  
+- 历史柱数据固定，不会变  
+- 实时柱数据会变，close 是当前价格  
+- 指标只负责画图  
+- 策略用于回测，默认下一根 K 线才成交  
+- 大多数变量都是时间序列  
+
+> 一句话总结: Pine Script 写的不是“程序”，而是“随 K 线执行的规则”
+
+
+### 示例
+
+- **引用历史值可以使用`[]`符号**
 
 ```
 // close[0] 当前K线的收盘价
@@ -128,7 +370,7 @@ a = close[1] // 创建a变量,变量的值是close[1]上一根K线的收盘价
 plot(a, color=color.white)
 ```
 
-- 时间序列与内置函数的结合
+- **时间序列与内置函数的结合**
 
 ```
 // 对K线的收盘价做一个截止到当前K线的随着时间不断累加的值
@@ -136,15 +378,17 @@ b = ta.cum(close)
 plot(b,color=color.white)
 ```
 
-- 连续柱上的函数调用结果也会在时间序列中留下可以使用`[]`
+- **连续柱上的函数调用结果也会在时间序列中留下可以使用`[]`**
 
 ```
-// 从过去10根K线中最大的最高价
-c = ta.highest(high,10)
-// 从过去10根K线中最大的最高价的前一个K线的最高值
-d = ta.highest(high[1],10)
-// 跟d画出来的效果是一样的,实际就是c[1]
-e = ta.highest(high,10)[1]
+// 从过去10根K线中最大的最高价,包括当前K
+c = ta.highest(high, 10)
+
+// 不包括当前K,从上一根 K 线开始算
+d = ta.highest(high[1], 10)
+
+// 跟d画出来的效果是一样的
+e = ta.highest(high, 10)[1]
 
 plot(c,color=color.white)
 plot(d,color=color.green)
@@ -290,34 +534,42 @@ switch
     close < high => color_data = color.yellow
 ```
 
-## 10. 自定义函数
+## 10. 循环
+
+Pine Script **支持循环语句**，但循环的使用方式与传统编程语言不同，具有较多限制，因此在实际开发中需要谨慎使用
+
 ---
 
-```javascript
+**`for` 循环（推荐使用）**
 
-f1(x,y) => x + y // 单行函数
+`for` 循环用于**循环次数在编译期可确定**的场景，是 Pine Script 中最常用、也是最安全的循环方式
 
-a = f1(1,1)
-b = f1(close,open)
-c = f1(open,1)
 
-f2(m,n) =>
-    a = m + n 
-    b = a + 1
-    b // 返回值
+```js
+for i = 起始值 to 结束值
+    // 循环体
+```
 
-d = f2(a,2)
+```js
+//@version=6
+indicator("for 循环示例")
+
+float highestHigh = high[0]
+
+for i = 1 to 9
+    highestHigh := math.max(highestHigh, high[i])
+
+plot(highestHigh)
 
 ```
 
+**while 循环（不推荐）**
 
+Pine Script 支持 while 循环，但限制非常严格：
 
+- 必须保证循环次数有限
 
+- 编译器会检测潜在死循环
 
-
-
-
-
-
-
+- 实际开发中极少使用
 
