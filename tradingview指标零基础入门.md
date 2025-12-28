@@ -1,4 +1,4 @@
-# tradingview常用指标整理
+# tradingview指标零基础入门
 
 - 散户视角
     - **趋势类** EMA/SMA/WMA/ADX 判断价格趋势方向/强弱

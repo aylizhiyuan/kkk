@@ -1,4 +1,4 @@
-# 量化入门 - tradingView
+# Pinscript语言入门
 
 ## 1. 脚本的基本结构
 
