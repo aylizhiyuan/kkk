@@ -1,4 +1,4 @@
-## tradingview常用指标整理
+# tradingview常用指标整理
 
 - 散户视角
     - **趋势类** EMA/SMA/WMA/ADX 判断价格趋势方向/强弱
@@ -6,13 +6,16 @@
     - **波动类** ATR/Bollinger Bands/Super Trend 看价格波动范围
     - **成交量类** OBV/Volume MA 看资金进出强弱
     - **形态类** ZigZag 识别图表形态
+    - **关键价位 & 行为类** 支撑阻力/前高前低/K线行为
 - 机构视角
     - **BOS/Choch** 趋势反转确认
     - **OB** 主力建仓区域
     - **Buy/Sell** side liquidity 主力吸单方向
     - **FVG** 价格不平衡区域,易回补
 
-### 一. 移动平均线 MA/EMA/SMA
+## 散户视角
+
+### 一. 趋势指标
 
 **ADX**
 
@@ -108,7 +111,7 @@ plot(show_ema55d and not is_5min ? ema55_day : na, title="日线 EMA55", color=c
 ```
 
 
-### 二、价格涨跌速度
+### 二、动能指标
 
 **MACD**
 
@@ -166,7 +169,7 @@ StochRSI=SMA(Raw StochRSI,smoothK)
 
 
 
-### 三、价格波动范围
+### 三、波动指标
 
 **BOLLING**
 
@@ -225,7 +228,7 @@ ATR是TR的平均,表示近期价格的平均波动幅度
 当价格 > 前一跟K上轨 = 上涨 , 当价格 < 前一根K下轨 = 下跌
 
 
-### 四、成交量
+### 四、成交量指标
 
 在Tradingview中原生数据只有`volume`,所有的量能指标都是基于`volume`计算的
 
@@ -307,7 +310,7 @@ vol_symbol =
 
 
 
-### 五、形态
+### 五、形态指标
 
 **zigzag**
 
@@ -436,9 +439,14 @@ if barstate.isconfirmed and array.size(ZZindexes) > 1
 
 ```
 
-### 六. 聪明钱SMC
 
-#### 1. 概念
+
+
+### 六、关键价位、行为类指标
+
+## 机构视角
+
+**BOS/Choch**
 
 订单块 = 庄家成本区 
 
@@ -449,8 +457,6 @@ if barstate.isconfirmed and array.size(ZZindexes) > 1
 
 趋势破坏 = Change of Character(Choch)价钱跌破前低形成底底低的下跌趋势架构,这意味着上升趋势大概率转为下跌趋势;价钱突破前高形成顶顶高的上升趋势架构,这意味着大概率转为上升趋势
 
-
-#### 2.市场结构
 
 - 市场只有三种结构：上涨 -> 下跌 -> 盘整
 - 趋势由高低点结构定义(HH,HL,LH,LL)
