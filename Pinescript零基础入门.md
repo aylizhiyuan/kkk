@@ -1,7 +1,7 @@
 # Pinscript语言入门
 
 ## 1. 脚本的基本结构
-
+---
 **指标:** 必须包含至少一个在图表上生成输出的函数调用,例如`plot()`,`plotshape()`,`barcolor()`,`line.new()`
 
 **策略:** 必须包含至少一个strategy.*()调用,例如`stragey.entry()`
@@ -46,7 +46,7 @@ if (shortCondition)
 
 
 ## 2. 函数
-
+---
 - 内置函数: Pine编辑器自带的可调用函数
 
 - 自定义函数
@@ -92,7 +92,7 @@ plot(close,'收盘价',color=color.green)
 
 
 ## 3. 脚本的运行逻辑
-
+---
 **执行模型:** 脚本如何在图表上执行的
 
 **历史柱:** 高/开/低/收/成交量已经确定了,并且不会再产生变化的K柱
@@ -152,7 +152,7 @@ plot(e,color=color.rgb(224,235,61))
 ```
 
 ## 4. 书写规则
-
+---
 **命名约定**
 
 - 变量或者函数名称使用驼峰式: maFast
@@ -171,7 +171,7 @@ plot(series = close, color = color.red)
 根据实际情况可将函数参数进行一些换行优化
 
 ## 5. 变量
-
+---
 ```javascript
 var string name1 = '测试' // 可以省略声明/数据类型
 name2 = '测试' // 可以是文字
@@ -195,6 +195,7 @@ data := data + 1 // 每次脚本执行的时候,data都会等于0
 
 
 ## 6. 数据类型
+---
 
 **[限定类型] - [变量类型]**
 
@@ -237,6 +238,7 @@ d = input.source(close,'标题') // series
 ```
 
 ## 7. 运算符
+---
 
 - 算数运算符 + - * / %
     - +可以用来字符串相连
@@ -259,6 +261,7 @@ d = input.source(close,'标题') // series
 
 ## 8. if条件
 
+---
 ```javascript
 
 if a - 1
@@ -272,6 +275,7 @@ else
 ```
 
 ## 9. switch条件
+---
 
 ```javascript
 
@@ -287,6 +291,7 @@ switch
 ```
 
 ## 10. 自定义函数
+---
 
 ```javascript
 

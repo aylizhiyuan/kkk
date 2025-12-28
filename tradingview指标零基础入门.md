@@ -1,21 +1,16 @@
 # tradingview指标零基础入门
 
-- 散户视角
-    - **趋势类** EMA/SMA/WMA/ADX 判断价格趋势方向/强弱
-    - **动能类** MACD/RSI/Stochastic 判断价格涨跌强弱、拐点
-    - **波动类** ATR/Bollinger Bands/Super Trend 看价格波动范围
-    - **成交量类** OBV/Volume MA 看资金进出强弱
-    - **形态类** ZigZag 识别图表形态
-    - **关键价位 & 行为类** 支撑阻力/前高前低/K线行为
-- 机构视角
-    - **BOS/Choch** 趋势反转确认
-    - **OB** 主力建仓区域
-    - **Buy/Sell** side liquidity 主力吸单方向
-    - **FVG** 价格不平衡区域,易回补
+- **趋势类** EMA / SMA / WMA / ADX 判断价格趋势方向/强弱
+- **动能类** MACD / RSI / Stochastic 判断价格涨跌强弱、拐点
+- **波动类** ATR /Bollinger Bands / Super Trend 看价格波动范围
+- **成交量类** OBV / Volume MA 看资金进出强弱
+- **形态类** ZigZag 识别图表形态
+- **关键价位 & 行为类** 支撑阻力 / 前高前低 / K线行为
+- **SMC** 聪明钱概念
 
-## 散户视角
+## 趋势指标
 
-### 一. 趋势指标
+---
 
 **ADX**
 
@@ -64,23 +59,75 @@ hline(25,      "趋势强度分界线", color=color.gray, linestyle=hline.style_
 
 ```
 
+**MA / SMA / EMA**
 
+**1. 什么是均线（Moving Average）**
 
-Simple Moving Average = (a1+a2+a3...+an) / n 
+均线（MA）是对某一时间周期内价格的平均处理，用于平滑价格波动、观察趋势方向
 
+> 均线不是预测工具，而是对已有价格走势的滞后描述
 
+---
 
+**2. 均线的常见类型**
 
-- 计算平滑系数,当前价格所占的比重吧
+市场中最常见的均线主要有三种：
 
-α = 2 / (10 + 1) = 0.1818, 10代表的是10EMA
+- **SMA（Simple Moving Average）**
+- **EMA（Exponential Moving Average）**
+- **WMA（Weighted Moving Average）**
 
-- 计算10日EMA, 1 - α 是前一日所占的比重
+---
 
-10EMA = α x 当前收盘价格 + (1 - α) x 前一日EMA
+**3. SMA（简单移动平均线**
 
-看起来只计算了前一根的EMA,但是前一个EMA也是依靠上上根的EMA计算的,每次只用前一根K线的EMA，但其实隐含了所有历史的痕迹，只是权重递减
+SMA 是最直观的均线形式，每一根 K 线的权重相同。
 
+**计算公式：**
+
+SMA = (a1 + a2 + a3 + ... + an) / n
+
+其中 n 为周期长度。
+
+特点：
+- 平滑效果好
+- 对价格变化反应较慢
+
+---
+
+**4. EMA（指数移动平均线**
+
+EMA 的核心思想是：**越接近当前的价格，权重越高**
+
+- 平滑系数 α
+
+α = 2 / (n + 1)
+
+例如 10 EMA：
+
+α = 2 / (10 + 1) ≈ 0.1818
+
+表示当前价格权重约为 18.18%
+
+- 计算公式
+
+EMA_today = α × 当前收盘价 + (1 - α) × EMA_yesterday
+
+虽然公式中只使用了前一日的 EMA，但前一日 EMA 本身已经隐含了所有更早历史价格的信息，只是权重不断递减。
+
+> EMA 是一种“带记忆的均线”,新价格记得清楚,旧价格逐渐淡忘，但从未完全消失
+
+---
+
+**5. WMA（加权移动平均线）**
+
+WMA 是人为设定权重的均线形式，通常采用线性递减权重
+
+相较于 EMA：
+- EMA 使用指数衰减权重
+- WMA 使用线性权重
+
+实战中 EMA 的应用更为广泛
 
 
 **多周期移动平均线EMA21/55**
@@ -111,7 +158,9 @@ plot(show_ema55d and not is_5min ? ema55_day : na, title="日线 EMA55", color=c
 ```
 
 
-### 二、动能指标
+## 动能指标
+
+---
 
 **MACD**
 
@@ -169,7 +218,8 @@ StochRSI=SMA(Raw StochRSI,smoothK)
 
 
 
-### 三、波动指标
+## 波动指标
+--- 
 
 **BOLLING**
 
@@ -228,7 +278,8 @@ ATR是TR的平均,表示近期价格的平均波动幅度
 当价格 > 前一跟K上轨 = 上涨 , 当价格 < 前一根K下轨 = 下跌
 
 
-### 四、成交量指标
+## 成交量指标
+---
 
 在Tradingview中原生数据只有`volume`,所有的量能指标都是基于`volume`计算的
 
@@ -310,7 +361,7 @@ vol_symbol =
 
 
 
-### 五、形态指标
+## 形态指标
 
 **zigzag**
 
@@ -442,10 +493,12 @@ if barstate.isconfirmed and array.size(ZZindexes) > 1
 
 
 
-### 六、关键价位、行为类指标
+## 关键价位、行为类指标
+---
+待补充...
 
-## 机构视角
-
+## SMC聪明钱
+---
 **BOS/Choch**
 
 订单块 = 庄家成本区 

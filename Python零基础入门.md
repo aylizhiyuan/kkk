@@ -1,7 +1,7 @@
 # Python3零基础入门
 
-## python基础语法
-
+## 一、python基础语法
+---
 ### 编码
 
 默认情况下python3的源码文件以`UTF-8`编码,所有的字符串也是unicode字符串
@@ -38,8 +38,8 @@ else:
 
 ```
 
-## python数据类型
-
+## 二、python数据类型
+---
 python中的变量不需要声明,每个变量在使用前都必须赋值,赋值以后该变量才会被创建
 
 `=`用来给变量赋值
@@ -231,8 +231,8 @@ print(tinydict.values) # 输出所有值
 ```
 
 
-## python数据类型转化
-
+## 三、python数据类型转化
+---
 - 隐式转化 ,自动完成
 - 显式类型转化,需要使用类型函数来转换
 
@@ -270,8 +270,8 @@ y = str(2)    # y 输出结果为 '2'
 z = str(3.0)  # z 输出结果为 '3.0'
 ```
 
-## python运算符
-
+## 四、python运算符
+---
 
 ### 算数运算符
 
@@ -516,8 +516,8 @@ else:
    print ("4 - a 和 b 有相同的标识")
 ```
 
-## python条件控制
-
+## 五、python条件控制
+---
 ```python
 # if判断
 age = int(input("请输入你家狗狗的年龄: "))
@@ -534,8 +534,8 @@ elif age > 2:
 
 ```
 
-## python循环语句
-
+## 六、python循环语句
+---
 ```python
 n = 100
 sum = 0
@@ -606,8 +606,8 @@ for letter in 'Runoob':     # 第一个实例
 
 ```
 
-## python迭代器
-
+## 七、python迭代器
+---
 迭代器是一个可以记住遍历的位置的对象,迭代器对象从集合的第一个元素开始访问,直到所有的元素被访问完结束.迭代器只能往前不会后退
 
 ```python
@@ -623,8 +623,8 @@ for x in it:
    print(x,end=" ")
 ```
 
-## python with
-
+## 八、python with
+---
 ```python
 
 with open('example.txt','r') as file:
@@ -633,8 +633,8 @@ with open('example.txt','r') as file:
 # 文件已经自动关闭
 ```
 
-## python函数
-
+## 九、python函数
+---
 ```
 def 函数名(参数列表):
    函数体
@@ -647,8 +647,8 @@ def hello() :
 hello()
 ```
 
-## python装饰器
-
+## 十、python装饰器
+---
 装饰器是一种函数,它接受一个函数作为参数,并返回一个新的函数或修改原来的函数
 
 - 日志记录: 装饰器可以用于记录函数的调用信息、参数和返回值
@@ -688,8 +688,8 @@ say_hello()
 
 ```
 
-## python模块
-
+## 十一、python模块
+---
 ```python
 # import module1[, module2[,... moduleN]
 
