@@ -291,7 +291,7 @@ ATR是TR的平均,表示近期价格的平均波动幅度
 
 在Tradingview中原生数据只有`volume`,所有的量能指标都是基于`volume`计算的
 
-待补充成交量指标...
+**请移步高阶实战...**
 
 
 
@@ -431,12 +431,9 @@ if barstate.isconfirmed and array.size(ZZindexes) > 1
 
 ```
 
-
-
-
 ## 关键价位、行为类指标
 
-待补充...
+**请移步高阶实战....**
 
 ## SMC聪明钱
 
