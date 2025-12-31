@@ -10,9 +10,9 @@
 
 ## 趋势指标
 
----
+### **ADX**
 
-**ADX**
+---
 
 主要用于判断单边行情的趋势强弱以及震荡 -- 本质就是趋势持续的时间,长期上涨的话,趋势就变强
 
@@ -59,7 +59,9 @@ hline(25,      "趋势强度分界线", color=color.gray, linestyle=hline.style_
 
 ```
 
-**MA / SMA / EMA**
+### **MA / SMA / EMA**
+
+---
 
 **1. 什么是均线（Moving Average）**
 
@@ -67,7 +69,6 @@ hline(25,      "趋势强度分界线", color=color.gray, linestyle=hline.style_
 
 > 均线不是预测工具，而是对已有价格走势的滞后描述
 
----
 
 **2. 均线的常见类型**
 
@@ -77,7 +78,7 @@ hline(25,      "趋势强度分界线", color=color.gray, linestyle=hline.style_
 - **EMA（Exponential Moving Average）**
 - **WMA（Weighted Moving Average）**
 
----
+
 
 **3. SMA（简单移动平均线**
 
@@ -93,7 +94,6 @@ SMA = (a1 + a2 + a3 + ... + an) / n
 - 平滑效果好
 - 对价格变化反应较慢
 
----
 
 **4. EMA（指数移动平均线**
 
@@ -117,7 +117,6 @@ EMA_today = α × 当前收盘价 + (1 - α) × EMA_yesterday
 
 > EMA 是一种“带记忆的均线”,新价格记得清楚,旧价格逐渐淡忘，但从未完全消失
 
----
 
 **5. WMA（加权移动平均线）**
 
@@ -160,9 +159,10 @@ plot(show_ema55d and not is_5min ? ema55_day : na, title="日线 EMA55", color=c
 
 ## 动能指标
 
----
 
-**MACD**
+### **MACD**
+
+---
 
 MACD = 快慢均线的距离
 
@@ -177,7 +177,9 @@ MACD柱状图 = DIF - DEA(动能增减的体现) = 反应这个开口相对于�
 
 背离情况: 价格在上涨，但上涨的速度越来越慢，MACD柱状图逐渐缩短（正值变小），动能减弱，形成MACD顶背离;价格在下跌，但下跌的速度越来越慢，MACD柱状图逐渐缩短（负值变小），动能衰竭，形成MACD底背离。
 
-**RSI**
+### **RSI**
+
+---
 
 RSI = 价格上涨下跌力度的强弱 = 通过计算一定周期内上涨和下跌的平均幅度，得出一个 0 到 100 之间的数值
 
@@ -199,7 +201,9 @@ RSI = 100 - (100 / 1 + RS)
 
 底背离情况: 价格创新低，而RSI未创新低，表明下跌动能减弱，可能反转上涨
 
-**随机RSI**
+### **随机RSI**
+
+---
 
 随机RSI就是把RSI当做价格，再套用随机指标的计算方式，比较RSI在过去N根中的位置，它告诉你RSI在自己的历史区间是偏高还是偏低
 
@@ -219,9 +223,10 @@ StochRSI=SMA(Raw StochRSI,smoothK)
 
 
 ## 波动指标
---- 
 
-**BOLLING**
+### **BOLLING**
+
+---
 
 Bolling = 价格波动幅度 = 价格默认会在这个布林带中波动
 
@@ -247,7 +252,9 @@ a1 + a2 + a3 ... / n → 平均这些偏离的平方值
 - 长期交易 Length: 50,标准差的乘积: 2.5
 
 
-**ATR**
+### **ATR**
+
+---
 
 **ATR = 过去 n 根 K 平均每根波动多少点 = 数字表示 = 某一天大了说明波动大了**
 
@@ -265,7 +272,9 @@ ATR是TR的平均,表示近期价格的平均波动幅度
 
 
 
-**Super Trend**
+### **Super Trend**
+
+---
 
 根据价格和市场波动来计算出上轨和下轨，当价格突破这些轨道的时候，趋势被认为发生了反转
 
@@ -279,102 +288,35 @@ ATR是TR的平均,表示近期价格的平均波动幅度
 
 
 ## 成交量指标
----
 
 在Tradingview中原生数据只有`volume`,所有的量能指标都是基于`volume`计算的
 
-***成交量反转指标**
-
-```js
-
-// === 成交量多级放量 ===
-vol_ma = ta.sma(volume, 20)
-vol_mild    = volume > vol_ma * 1.2 and volume <= vol_ma * 1.5
-vol_strong  = volume > vol_ma * 1.5 and volume <= vol_ma * 2.0
-vol_extreme = volume > vol_ma * 2.0
-
-// === 参数 ===
-bars_lookahead = 5          // 跟踪未来5根
-follow_vol_mult = 1.0       // 跟随K线的放量标准（>均量即可）
-follow_vol_required = 2     // 至少2根跟随放量
-look_back = 20              // 突破的观察周期
-
-// === 状态变量 ===
-var bool track_follow = false        // 是否正在跟踪中
-var int bars_since_break = 0         // 已经过去的K线数
-var int follow_vol_count = 0         // 跟随放量的数量
-var bool has_following_vol = false   // 是否确认出现跟随放量
-var label buy_label = na  // 保存标签，防止重复画
-
-// === 主放量触发 ===
-atr30 = ta.atr(30)          // 每根K线只计算一次
-y1 = low - (atr30 * 2.0)
-
-// === 低位突破逻辑 ===
-bull_anchor_low = ta.lowest(low, look_back)
-is_bull_anchor_break = low <= bull_anchor_low // 当前K线的最低点是20根K线中的最低点
-// 爆量K的条件: 成交量1.2, 创造了最低点,阳K
-is_main_break = volume > vol_ma * 1.2 and is_bull_anchor_break and close > open
-
-// 假如已经出现了爆量K，并且未启动监控，则启动监控，并恢复初始计时
-if is_main_break and not track_follow
-    // 只启动跟踪，不立即统计
-    track_follow := true
-    bars_since_break := 0
-    follow_vol_count := 0
-    has_following_vol := false
-
-// 爆量已经出现并且启动了监控了
-else if track_follow
-    // 进入跟踪逻辑
-    bars_since_break += 1
-
-    // 检查当前K线是否放量且上涨,放量后进行累加
-    if volume > vol_ma * follow_vol_mult and close > open // 必须保证是阳线跟随
-        follow_vol_count += 1
-
-    // 若5根内出现至少2根放量，则确认成功
-    if follow_vol_count >= follow_vol_required and not has_following_vol
-        has_following_vol := true // 展示连续放量标签
-        buy_label := label.new(bar_index, low - atr30*2, "BUY\n★", 
-                               style=label.style_label_up,
-                               color=color.new(color.green,0),
-                               textcolor=color.white,
-                               size=size.small)
-
-    // 超过5根取消监控并去除标签
-    if bars_since_break >= bars_lookahead
-        track_follow := false // 放弃统计并重新进行爆量K的统计
-        has_following_vol := false  // 去除标签的展示
-
-// === 可视化标识 ===
-vol_symbol =
-     vol_extreme       ? "🚀" :
-     vol_strong        ? "💥" :
-     vol_mild          ? "🟢" :
-                         "⚪️"
-
-```
-
-
-
+待补充成交量指标...
 
 
 
 ## 形态指标
 
-**zigzag**
+### **zigzag**
+
+---
+
+检查当前K线是否是20根K中的高低点,如果是则画出,如果不是则不更新,当新的K线出来之后,再检查是否是20根K线中的高低点,循环不断（无极值不更新）
+
+这个已经确定的高点和低点则可以判断当前趋势的图表形态,为后续走势做出预判,不能作为进场条件
 
 ```js
+// zigzag
+
 //General
-period = input.int(18, step=1, minval=5, title='Length', group='General', display=display.none)
+period = input.int(20, step=1, minval=5, title='Length', group='zigzag', display=display.none)
 
 //SR signal
-showSR= input(true, title='Lines', group='Support & Resistance', inline='length', display=display.none)
+showSR= input(false, title='支撑/压力线', group='zigzag', inline='length', display=display.none)
 
 // Signal settings
-showLabels = input(true, title='Labels', group='Show', inline='length1', display=display.none)
-showZZ = input(false, title='ZigZag', group='Show', inline='length1', display=display.none)
+showLabels = input(true, title='是否显示标签', group='zigzag', inline='length1', display=display.none)
+showZZ = input(true, title='是否显示转折线', group='zigzag', inline='length1', display=display.none)
 
 HHColor = color.green //bullishColorT
 LHColor = color.orange //bullTrapColorT
@@ -458,7 +400,6 @@ if barstate.isconfirmed and array.size(ZZindexes) > 1
         labelLocation = yloc.price
           
         if showLabels
-
             l = label.new(x=index, y=value, xloc=xloc.bar_index, yloc=labelLocation, style=labelStyle, size=size.tiny, color=labelColor,text=labelText)
             array.unshift(labelArray, l)
             if array.size(labelArray) > max_array_size
@@ -494,13 +435,16 @@ if barstate.isconfirmed and array.size(ZZindexes) > 1
 
 
 ## 关键价位、行为类指标
----
+
 待补充...
 
 ## SMC聪明钱
----
 
-**BOS/Choch**
+### **结构突破 BOS/CHOCH** 
+
+--- 
+
+**概念**
 
 订单块 = 庄家成本区 
 
@@ -515,6 +459,8 @@ if barstate.isconfirmed and array.size(ZZindexes) > 1
 - 市场只有三种结构：上涨 -> 下跌 -> 盘整
 - 趋势由高低点结构定义(HH,HL,LH,LL)
 - 结构反转(CHoCH),趋势确认(BOS)
+
+**核心**
 
 把市场切成一格一格的小单元(每5根K线),每一格检查有没有趋势反转,如果反转 ——> 记录pivot,如果没有反转 -> 忽略(不计入结构)
 
@@ -539,17 +485,21 @@ bar3 vs [bar4,bar5,bar6,bar7,current(bar8)]
 
 ```
 
-**1. 核心逻辑**
+**结构核心代码**
+
+它会将这些极值的K线记录下来,他们都是在某个时间周期内的最高点/最低点,并且它只记录反转时刻,也就是说看跌脚出来后,继续记录看涨脚,然后记录看跌脚,循环往复....
+
+本质上,是不预测行情,上涨记录看跌点,下跌记录看涨点即可....
 
 ```js
 
 leg(int size) =>
     var leg     = 0
     // 看跌leg
-    // 过往第6根高点 > 之前5根的最高点,所以他是一组结构中(5根为一组)的最高点
+    // high[5] 历史第6根高点 > 之前5根的最高点(包含当前K线在内的历史5根),所以他是一组结构中(5根为一组)的最高点
     newLegHigh  = high[size] > ta.highest( size)
     // 看涨leg
-    // 过往第6根的低点 < 之前5根的最低点,所以它是一组结构中的最低点
+    // low[5] 过往第6根的低点 < 之前5根的最低点(包含当前K在内的历史5根),所以它是一组结构中的最低点
     newLegLow   = low[size]  < ta.lowest( size)
     
     if newLegHigh
@@ -570,7 +520,7 @@ startOfBullishLeg(int leg)  => ta.change(leg) == +1
 
 ```
 
-**2. 获取结构块**
+**获取结构块**
 
 有了结构块以后,我们就可以画出HH HL LL LH这种反转点了, 高点(HH or HL)/低点(LH LL)分别标注
 
@@ -584,19 +534,18 @@ getCurrentStructure(int size,bool equalHighLow = false, bool internal = false) =
     pivotLow                = startOfBullishLeg(currentLeg)
     // 看涨反转
     pivotHigh               = startOfBearishLeg(currentLeg)
-    // 结构块反转后记录反转的价格
+    // 反转后记录,否则不做任何操作
     if newPivot
-        // 下跌 --> 上涨，记录上涨起涨点
+        // 下跌 --> 上涨,记录起涨点
         if pivotLow
-            // 低点序列
+            // 低点序列 internal 小周期 swing 大周期
             pivot p_ivot    = equalHighLow ? equalLow : internal ? internalLow : swingLow    
-            // 上一个 pivot 低点跟当前检测到的 pivot 低点是否相等
-            // 这里是3根为一组来进行判断的,并且数据是放在equalLow
+            // 上一个 pivot 起涨点和当前起涨点 pivot 是否相同
             if equalHighLow and math.abs(p_ivot.currentLevel - low[size]) < equalHighsLowsThresholdInput * atrMeasure                
                 drawEqualHighLow(p_ivot, low[size], size, false)
-            // 上一个 pivot 的价格
+            // 上一个 pivot 起涨点的价格
             p_ivot.lastLevel    := p_ivot.currentLevel
-            // 当前检测到的 pivot 的价格
+            // 当前起涨点的价格
             p_ivot.currentLevel := low[size]
             p_ivot.crossed      := false
             p_ivot.barTime      := time[size]
@@ -611,15 +560,15 @@ getCurrentStructure(int size,bool equalHighLow = false, bool internal = false) =
             if showSwingsInput and not internal and not equalHighLow
                 drawLabel(time[size], p_ivot.currentLevel, p_ivot.currentLevel < p_ivot.lastLevel ? 'LL' : 'HL', swingBullishColor, label.style_label_up)            
         else
-            // 上涨 -> 下跌,记录下跌的起跌点
+            // 上涨 -> 下跌,记录起跌点
             pivot p_ivot = equalHighLow ? equalHigh : internal ? internalHigh : swingHigh
-            // 上一个 pivot 的高点 跟当前检测到的 pivot 的高点是否相等
+            // 上一个 pivot 的高点 跟当前 pivot 的高点是否相等
             if equalHighLow and math.abs(p_ivot.currentLevel - high[size]) < equalHighsLowsThresholdInput * atrMeasure
                 drawEqualHighLow(p_ivot,high[size],size,true)
                            
-            // 上一个 pivot 高点 
+            // 上一个 pivot 高点价格
             p_ivot.lastLevel    := p_ivot.currentLevel
-            // 当前检测到的 pivot 高点
+            // 当前 pivot 高点价格
             p_ivot.currentLevel := high[size]
             p_ivot.crossed      := false
             p_ivot.barTime      := time[size]
@@ -635,14 +584,12 @@ getCurrentStructure(int size,bool equalHighLow = false, bool internal = false) =
                 drawLabel(time[size], p_ivot.currentLevel, p_ivot.currentLevel > p_ivot.lastLevel ? 'HH' : 'LH', swingBearishColor, label.style_label_down)
 ```
 
-
-
-**3. 结构突破CHOCH + BOS**
+**画出结构突破**
 
 我们已经以5根为一组记录了一下上涨和下跌反转的关键位置了,接下来就是等待价格超过这些关键位置的时候标注
 
-**当当前的价格有效突破反转结构块的高点的时候,意味着价格从下跌转为了上涨**
-**当当前的价格有效跌破反转结构块的低点的时候,意味着价格从上涨转为了下跌**
+**当价格有效突破看跌结构块的时候,画出上涨突破**
+**当价格有效跌破看涨结构块的时候,画出下跌突破**
 
 
 ```js
@@ -699,64 +646,3 @@ displayStructure(bool internal = false) =>
             storeOrdeBlock(p_ivot,internal,BEARISH)
 
 ```
-
-**4. orderBlock的删除逻辑**
-
-```js
-// 删除订单块的逻辑 , true 内部 false 波段
-deleteOrderBlocks(bool internal = false) =>
-    array<orderBlock> orderBlocks = internal ? internalOrderBlocks : swingOrderBlocks
-
-    for [index,eachOrderBlock] in orderBlocks
-        bool crossedOderBlock = false
-        
-        if bearishOrderBlockMitigationSource > eachOrderBlock.barHigh and eachOrderBlock.bias == BEARISH
-            crossedOderBlock := true
-        else if bullishOrderBlockMitigationSource < eachOrderBlock.barLow and eachOrderBlock.bias == BULLISH
-            crossedOderBlock := true
-        if crossedOderBlock                    
-            orderBlocks.remove(index)      
-
-
-```
-
-**5. order Block的绘制**
-
-```js
-drawOrderBlocks(bool internal = false) =>        
-    array<orderBlock> orderBlocks = internal ? internalOrderBlocks : swingOrderBlocks
-    orderBlocksSize = orderBlocks.size()
-
-    if orderBlocksSize > 0        
-        maxOrderBlocks                      = internal ? internalOrderBlocksSizeInput : swingOrderBlocksSizeInput
-        array<orderBlock> parsedOrdeBlocks  = orderBlocks.slice(0, math.min(maxOrderBlocks,orderBlocksSize))
-        array<box> b_oxes                   = internal ? internalOrderBlocksBoxes : swingOrderBlocksBoxes        
-
-        for [index,eachOrderBlock] in parsedOrdeBlocks
-            orderBlockColor = styleInput == MONOCHROME ? (eachOrderBlock.bias == BEARISH ? color.new(MONO_BEARISH,80) : color.new(MONO_BULLISH,80)) : internal ? (eachOrderBlock.bias == BEARISH ? internalBearishOrderBlockColor : internalBullishOrderBlockColor) : (eachOrderBlock.bias == BEARISH ? swingBearishOrderBlockColor : swingBullishOrderBlockColor)
-
-            box b_ox        = b_oxes.get(index)
-            b_ox.set_top_left_point(    chart.point.new(eachOrderBlock.barTime,na,eachOrderBlock.barHigh))
-            b_ox.set_bottom_right_point(chart.point.new(last_bar_time,na,eachOrderBlock.barLow))        
-            b_ox.set_border_color(      internal ? na : orderBlockColor)
-            b_ox.set_bgcolor(           orderBlockColor)
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
