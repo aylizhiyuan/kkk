@@ -30,8 +30,6 @@ K线的绘制方法是找到当日最高和最低价,垂直连成一条直线,�
 ![](./images/k/greenk.jpg)
 
 
-
-
 ### 常见的K线形态
 
 ![](./images/k/type2.png)
